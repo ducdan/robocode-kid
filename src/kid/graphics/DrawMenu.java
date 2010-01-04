@@ -6,24 +6,24 @@ import java.util.ArrayList;
 
 public class DrawMenu {
 
-   public static double START_X = 0.0D;
-   public static double START_Y = 1.0D;
+   public static double           START_X          = 0.0D;
+   public static double           START_Y          = 1.0D;
 
-   public static final double RECTANGLE_WIDTH = 70.0D;
-   public static final double RECTANGLE_HEIGHT = 12.0D;
+   public static final double     RECTANGLE_WIDTH  = 70.0D;
+   public static final double     RECTANGLE_HEIGHT = 12.0D;
 
-   public static final double STRING_OFFSET_X = 2.0D;
-   public static final double STRING_OFFSET_Y = 2.0D;
+   public static final double     STRING_OFFSET_X  = 2.0D;
+   public static final double     STRING_OFFSET_Y  = 2.0D;
 
-   public static final Color MENU_OPEN = Colors.TURQUOISE;
-   public static final Color MENU_CLOSED = Colors.RED;
+   public static final Color      MENU_OPEN        = Colors.TURQUOISE;
+   public static final Color      MENU_CLOSED      = Colors.RED;
 
-   public static final Color ITEM_ON = Colors.LIME_GREEN;
-   public static final Color ITEM_OFF = Colors.RED;
+   public static final Color      ITEM_ON          = Colors.LIME_GREEN;
+   public static final Color      ITEM_OFF         = Colors.RED;
 
-   private static boolean open = false;
+   private static boolean         open             = false;
 
-   private static ArrayList<Menu> menus = new ArrayList<Menu>();
+   private static ArrayList<Menu> menus            = new ArrayList<Menu>();
 
    public static void add(String item, String menu) {
       add(item, menu, false);
@@ -92,12 +92,6 @@ public class DrawMenu {
 
    public static void draw(final RGraphics grid) {
       grid.setColor(MENU_CLOSED);
-      // FontMetrics fm = grid.getFontMetrics(grid.getFont());
-      // for (Menu m : menus) {
-      // int width = fm.stringWidth(m.getName()) + 8;
-      // RECTANGLE_WIDTH = Math.max(RECTANGLE_WIDTH, width);
-      // }
-
       if (open) {
          for (int i = 0; i < menus.size(); i++) {
             Menu menu = menus.get(i);
