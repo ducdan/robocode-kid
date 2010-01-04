@@ -1,11 +1,11 @@
 package dev.move;
 
 import java.awt.geom.Rectangle2D;
-import java.text.DecimalFormat;
 
 import robocode.AdvancedRobot;
 import robocode.Robot;
 import robocode.Rules;
+import dev.Format;
 import dev.Trig;
 import dev.Utils;
 
@@ -19,7 +19,7 @@ public class PsudoRobot {
    private double heading;
    private double velocity;
 
-   private long time;
+   private long   time;
 
    private double bfw;
    private double bfh;
@@ -106,20 +106,20 @@ public class PsudoRobot {
    }
 
    public void compare(Robot robot) {
-      DecimalFormat f = new DecimalFormat("#0.00;-#0.00");
-      robot.out.println("PSUDO: (" + f.format(x) + ", " + f.format(y) + ") H:"
-            + f.format(Math.toDegrees(robocode.util.Utils.normalAbsoluteAngle(heading))) + " V:" + f.format(velocity)
-            + " F:" + f.format(forward) + " T:" + f.format(right) + " TIME:" + time);
-      robot.out.print("ROBOT: (" + f.format(robot.getX()) + ", " + f.format(robot.getY()) + ") H:"
-            + f.format(robot.getHeading()) + " V:" + f.format(robot.getVelocity()));
+      robot.out.println("PSUDO: (" + Format.twoDec(x) + ", " + Format.twoDec(y) + ") H:"
+            + Format.twoDec(Math.toDegrees(Utils.absolute(heading))) + " V:" + Format.twoDec(velocity) + " F:"
+            + Format.twoDec(forward) + " T:" + Format.twoDec(right) + " TIME:" + time);
+      robot.out.print("ROBOT: (" + Format.twoDec(robot.getX()) + ", " + Format.twoDec(robot.getY()) + ") H:"
+            + Format.twoDec(robot.getHeading()) + " V:" + Format.twoDec(robot.getVelocity()));
       if (robot instanceof AdvancedRobot) {
          AdvancedRobot ar = (AdvancedRobot) robot;
-         robot.out.print(" F:" + f.format(ar.getDistanceRemaining()) + " T:" + f.format(ar.getTurnRemainingRadians()));
+         robot.out.print(" F:" + Format.twoDec(ar.getDistanceRemaining()) + " T:"
+               + Format.twoDec(ar.getTurnRemainingRadians()));
       }
       robot.out.println(" TIME:" + robot.getTime());
       // robot.out.println();
 
-      if (!Utils.isNear(x, robot.getX()) || !Utils.isNear(y, robot.getY())) {
+      if (!Utils.isNear(x, robot.getX(), 0.01) || !Utils.isNear(y, robot.getY(), 0.01)) {
          robot.out.println("ERROR!");
       }
    }

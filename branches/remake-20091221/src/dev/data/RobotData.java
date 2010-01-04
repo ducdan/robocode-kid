@@ -4,110 +4,108 @@ import java.awt.geom.Rectangle2D;
 import java.io.PrintStream;
 import java.io.Serializable;
 
-import kid.data.Drawable;
-import kid.data.Printable;
-import kid.graphics.Colors;
-import kid.graphics.DrawMenu;
-import kid.graphics.RGraphics;
 import kid.info.RobotInfo;
 import robocode.RobocodeFileOutputStream;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
 import dev.Utils;
+import dev.draw.DrawMenu;
+import dev.draw.RobotColor;
+import dev.draw.RobotGraphics;
 
-public class RobotData implements Cloneable, Serializable, Printable, Drawable {
+public class RobotData implements Cloneable, Serializable {
 
    /**
     * Determines if a deserialized file is compatible with this class.<br>
     * <br>
-    * Maintainers must change this value if and only if the new version of this class is not
-    * compatible with old versions.
+    * Maintainers must change this value if and only if the new version of this class is not compatible with old
+    * versions.
     */
-   private static final long serialVersionUID = -6829232010226649500L;
+   private static final long     serialVersionUID = -6829232010226649500L;
 
 
    /**
     * The weight that the original average cares when calculating the new average.
     */
-   protected static final double AVERAGE_WEIGHT = 5.0D;
+   protected static final double AVERAGE_WEIGHT   = 5.0D;
 
    /**
     * The energy that a robot has when it is destroyed.
     */
-   protected static final double DEAD_ENERGY = -1.0D;
+   protected static final double DEAD_ENERGY      = -1.0D;
 
 
 
    /**
     * The name of the robot.
     */
-   protected String name;
+   protected String              name;
 
    /**
     * The <code>x</code> coordinate of the robot.
     */
-   protected double x;
+   protected double              x;
 
    /**
     * The <code>y</code> coordinate of the robot.
     */
-   protected double y;
+   protected double              y;
 
    /**
     * The energy of the robot.
     */
-   protected double energy;
+   protected double              energy;
 
    /**
     * The difference of the robot's current energy and it's last known energy.
     */
-   protected double deltaEnergy;
+   protected double              deltaEnergy;
 
    /**
     * The robot's heading in degrees.
     */
-   protected double heading;
+   protected double              heading;
 
    /**
     * The difference in degrees of the robot's current heading and it's last known heading.
     */
-   protected double deltaHeading;
+   protected double              deltaHeading;
 
    /**
     * The robot's average delta heading.
     * 
     * @see #deltaHeading
     */
-   protected double avgDeltaHeading;
+   protected double              avgDeltaHeading;
 
    /**
     * The robot's speed in pixels per tick.
     */
-   protected double velocity;
+   protected double              velocity;
 
    /**
     * The difference in speed of the robot's current velocity and it's last known velocity.
     */
-   protected double deltaVelocity;
+   protected double              deltaVelocity;
 
    /**
     * The robot's average velocity.
     * 
     * @see #velocity
     */
-   protected double avgVelocity;
+   protected double              avgVelocity;
 
    /**
     * The robot's average delta velocity.
     * 
     * @see #avgDeltaVelocity
     */
-   protected double avgDeltaVelocity;
+   protected double              avgDeltaVelocity;
 
    /**
     * The last time at which the robot's information was updated.
     */
-   protected long time;
+   protected long                time;
 
 
 
@@ -129,7 +127,7 @@ public class RobotData implements Cloneable, Serializable, Printable, Drawable {
       init(r.getName(), r.getX(), r.getY(), r.getEnergy(), Math.toRadians(r.getHeading()), r.getVelocity(), r.getTime());
    }
 
-   public RobotData(RobotData r) {
+   protected RobotData(RobotData r) {
       init(r.getName(), r.getX(), r.getY(), r.getEnergy(), r.getDeltaEnergy(), r.getHeading(), r.getDeltaHeading(), r
             .getAvgDeltaHeading(), r.getVelocity(), r.getDeltaVelocity(), r.getAvgVelocity(), r.getAvgDeltaVelocity(),
             r.getTime());
@@ -159,12 +157,12 @@ public class RobotData implements Cloneable, Serializable, Printable, Drawable {
 
 
    /**
-    * Updates the <code>RobotData class</code> with the new given information. It assumes that the
-    * robot went straight from its previous known position to the new position.<br>
+    * Updates the <code>RobotData class</code> with the new given information. It assumes that the robot went straight
+    * from its previous known position to the new position.<br>
     * <br>
     * This method should not be called directly but should be called through either
-    * <code>{@link kid.robot.RobotData#update(ScannedRobotEvent, Robot) update(ScannedRobotEvent, Robot)}</code>
-    * or <code>{@link kid.robot.RobotData#update(Robot) update(Robot)}</code>.
+    * <code>{@link kid.robot.RobotData#update(ScannedRobotEvent, Robot) update(ScannedRobotEvent, Robot)}</code> or
+    * <code>{@link kid.robot.RobotData#update(Robot) update(Robot)}</code>.
     * 
     * @param x
     *           - the <code>x</code> component of the robot's current position.
@@ -249,8 +247,7 @@ public class RobotData implements Cloneable, Serializable, Printable, Drawable {
    }
 
    /**
-    * Returns a <code>Rectangle2D</code> that is the height, width and at the current position of
-    * the robot.
+    * Returns a <code>Rectangle2D</code> that is the height, width and at the current position of the robot.
     * 
     * @return the robot's <code>Rectangle</code>.
     */
@@ -371,12 +368,10 @@ public class RobotData implements Cloneable, Serializable, Printable, Drawable {
    }
 
 
-   @Override
    public void print(PrintStream console) {
       console.println(this.toString());
    }
 
-   @Override
    public void print(RobocodeFileOutputStream output) {
       PrintStream file = new PrintStream(output);
       file.println(getClass() + ": " + this.getName() + " at Time: " + this.getTime());
@@ -397,11 +392,10 @@ public class RobotData implements Cloneable, Serializable, Printable, Drawable {
             + this.getEnergy() + " " + this.getHeading() + " " + this.getVelocity() + " " + this.getTime());
    }
 
-   @Override
-   public void draw(RGraphics grid) {
+   public void draw(RobotGraphics grid) {
       if (!this.isDead()) {
          if (DrawMenu.getValue("Square", "Robot")) {
-            grid.setColor(Colors.LIGHT_GRAY);
+            grid.setColor(RobotColor.LIGHT_GRAY);
             grid.draw(this.getRectangle());
          }
       }

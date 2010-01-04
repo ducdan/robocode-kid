@@ -12,8 +12,8 @@ import java.util.HashMap;
 
 public class Menu {
 
-   private String name;
-   private boolean open;
+   private String                   name;
+   private boolean                  open;
    private HashMap<String, Boolean> items;
 
    public Menu(String name) {
