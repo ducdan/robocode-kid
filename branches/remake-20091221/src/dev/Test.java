@@ -2,6 +2,7 @@ package dev;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 
 import robocode.AdvancedRobot;
@@ -9,12 +10,13 @@ import robocode.HitRobotEvent;
 import robocode.HitWallEvent;
 import robocode.Rules;
 import robocode.ScannedRobotEvent;
+import dev.draw.DrawMenu;
 import dev.move.PsudoRobot;
 
 public class Test extends AdvancedRobot {
    private PsudoRobot psudo;
 
-   boolean movingForward;
+   boolean            movingForward;
 
    @Override
    public void run() {
@@ -70,12 +72,11 @@ public class Test extends AdvancedRobot {
       }
    }
 
-   double radius = Rules.MAX_VELOCITY / Math.sin(Rules.getTurnRateRadians(Rules.MAX_VELOCITY));
+   double           radius = Rules.MAX_VELOCITY / Math.sin(Rules.getTurnRateRadians(Rules.MAX_VELOCITY));
    RoundRectangle2D rr2d;
 
    @Override
    public void onPaint(Graphics2D g) {
-      super.onPaint(g);
       g.setColor(Color.BLUE);
 
       g.draw(rr2d);
@@ -85,6 +86,12 @@ public class Test extends AdvancedRobot {
          r.tick();
          g.fillOval((int) r.getX(), (int) r.getY(), 2, 2);
       }
+
+      DrawMenu.draw(g);
+
+      DrawMenu.getValue("Hello", "Goodbye");
+      DrawMenu.getValue("Hey", "Bye");
+      DrawMenu.getValue("Sweet Dreams", "Night Time");
    }
 
    @Override
@@ -102,5 +109,10 @@ public class Test extends AdvancedRobot {
       if (e.isMyFault()) {
          reverseDirection();
       }
+   }
+
+   @Override
+   public void onMouseClicked(MouseEvent e) {
+      DrawMenu.inMouseEvent(e);
    }
 }
