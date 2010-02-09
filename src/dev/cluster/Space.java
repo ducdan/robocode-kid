@@ -1,5 +1,6 @@
 package dev.cluster;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -8,31 +9,42 @@ import dev.data.RobotData;
 
 public class Space {
 
+   public void print() {
+      for (Dimension d : this.dimensions) {
+         d.print();
+      }
+   }
+
    private LinkedList<Dimension> dimensions;
    private Collection<Scale>     scales;
 
    public Space(Collection<Scale> scales) {
       this.scales = scales;
-      dimensions = new LinkedList<Dimension>();
+      this.dimensions = new LinkedList<Dimension>();
       for (Scale s : scales)
-         dimensions.add(new Dimension(s));
+         this.dimensions.add(new Dimension(s));
    }
 
+   public Space(Scale[] scales) {
+      this(Arrays.asList(scales));
+   }
+
+
    public void add(RobotData view, RobotData reference) {
-      Vector v = new Vector(scales, view, reference);
-      for (Dimension d : dimensions)
+      Vector v = new Vector(this.scales, view, reference);
+      for (Dimension d : this.dimensions)
          d.add(v);
    }
 
    public LinkedList<Vector> getClustor(RobotData view, RobotData reference, int size) {
-      Vector center = new Vector(scales, view, reference);
+      Vector center = new Vector(this.scales, view, reference);
       LinkedList<SortVector> sorted = new LinkedList<SortVector>();
-      for (Dimension d : dimensions) {
+      for (Dimension d : this.dimensions) {
          for (Vector v : d.getCluster(center, size)) {
-            
+
             // TODO code: make so that one scale does not have precedence over another
             double sort = 0.0;
-            for (Scale s : scales)
+            for (Scale s : this.scales)
                sort += Utils.sqr(s.compare(center, v));
 
             // binary search
@@ -87,16 +99,19 @@ public class Space {
          this.sort = sort;
       }
 
+      @Override
       public RobotData getView() {
-         return vector.getView();
+         return this.vector.getView();
       }
 
+      @Override
       public RobotData getReference() {
-         return vector.getReference();
+         return this.vector.getReference();
       }
 
+      @Override
       protected Component getComponent(Scale s) {
-         return vector.getComponent(s);
+         return this.vector.getComponent(s);
       }
    }
 

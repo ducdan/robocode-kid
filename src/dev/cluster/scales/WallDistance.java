@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 import dev.Utils;
 import dev.cluster.Scale;
 import dev.data.RobotData;
+import dev.data.RobotDataAccesser;
 
 public class WallDistance extends Scale {
 
@@ -16,8 +17,9 @@ public class WallDistance extends Scale {
 
    @Override
    public double value(RobotData view, RobotData reference) {
-      return Utils.min(view.getX(), view.getY(), battleFeild.getMaxX() - view.getX(), battleFeild.getMaxY()
-            - view.getY());
+     RobotDataAccesser viewAccess = new RobotDataAccesser(view);
+      return Utils.min(viewAccess.getX(), viewAccess.getY(), this.battleFeild.getMaxX() - viewAccess.getX(), this.battleFeild.getMaxY()
+            - viewAccess.getY());
    }
 
    @Override

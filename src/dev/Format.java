@@ -30,4 +30,21 @@ public class Format {
       return THREE_DEC.format(n);
    }
 
+
+   public static final String corrdinateNoDec(double x, double y) {
+      return "(" + noDec(x) + ". " + noDec(y) + ")";
+   }
+
+   public static final String corrdinateOneDec(double x, double y) {
+      return "(" + oneDec(x) + ". " + oneDec(y) + ")";
+   }
+
+   public static final String corrdinateTwoDec(double x, double y) {
+      return "(" + twoDec(x) + ". " + twoDec(y) + ")";
+   }
+
+   public static final String corrdinateThreeDec(double x, double y) {
+      return "(" + threeDec(x) + ". " + threeDec(y) + ")";
+   }
+
 }
