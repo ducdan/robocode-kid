@@ -1,6 +1,5 @@
 package dev.data;
 
-import java.awt.geom.Rectangle2D;
 import java.io.PrintStream;
 import java.io.Serializable;
 
@@ -8,6 +7,7 @@ import kid.info.RobotInfo;
 import robocode.RobocodeFileOutputStream;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
+import dev.Format;
 import dev.Utils;
 import dev.draw.DrawMenu;
 import dev.draw.RobotColor;
@@ -110,31 +110,30 @@ public class RobotData implements Cloneable, Serializable {
 
 
    public RobotData() {
-      init(new String(), Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, DEAD_ENERGY, 0.0D, 0.0D, -1);
+      this.init(new String(), Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, DEAD_ENERGY, 0.0D, 0.0D, -1);
    }
 
    public RobotData(String n, double x, double y, double e, double h, double v, long t) {
-      init(n, x, y, e, h, v, t);
+      this.init(n, x, y, e, h, v, t);
    }
 
    public RobotData(ScannedRobotEvent e, Robot r) {
       double x = Utils.getX(r.getX(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
       double y = Utils.getY(r.getY(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
-      init(e.getName(), x, y, e.getEnergy(), e.getHeadingRadians(), e.getVelocity(), e.getTime());
+      this.init(e.getName(), x, y, e.getEnergy(), e.getHeadingRadians(), e.getVelocity(), e.getTime());
    }
 
    public RobotData(Robot r) {
-      init(r.getName(), r.getX(), r.getY(), r.getEnergy(), Math.toRadians(r.getHeading()), r.getVelocity(), r.getTime());
+      this.init(r.getName(), r.getX(), r.getY(), r.getEnergy(), Math.toRadians(r.getHeading()), r.getVelocity(), r.getTime());
    }
 
    protected RobotData(RobotData r) {
-      init(r.getName(), r.getX(), r.getY(), r.getEnergy(), r.getDeltaEnergy(), r.getHeading(), r.getDeltaHeading(), r
-            .getAvgDeltaHeading(), r.getVelocity(), r.getDeltaVelocity(), r.getAvgVelocity(), r.getAvgDeltaVelocity(),
-            r.getTime());
+      this.init(r.name, r.x, r.y, r.energy, r.deltaEnergy, r.heading, r.deltaHeading, r.avgDeltaHeading, r.velocity,
+            r.deltaVelocity, r.avgVelocity, r.avgDeltaVelocity, r.time);
    }
 
    protected void init(String n, double x, double y, double e, double h, double v, long t) {
-      init(n, x, y, e, 0.0D, h, 0.0D, 0.0D, v, 0.0D, v, 0.0D, t);
+      this.init(n, x, y, e, 0.0D, h, 0.0D, 0.0D, v, 0.0D, v, 0.0D, t);
    }
 
    protected void init(String n, double x, double y, double e, double dE, double h, double dH, double a_dH, double v,
@@ -210,68 +209,11 @@ public class RobotData implements Cloneable, Serializable {
    public void update(ScannedRobotEvent e, Robot r) {
       double curX = Utils.getX(r.getX(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
       double curY = Utils.getY(r.getY(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
-      update(curX, curY, e.getEnergy(), e.getHeadingRadians(), e.getVelocity(), e.getTime());
+      this.update(curX, curY, e.getEnergy(), e.getHeadingRadians(), e.getVelocity(), e.getTime());
    }
 
    public void update(Robot r) {
-      update(r.getX(), r.getY(), r.getEnergy(), Math.toRadians(r.getHeading()), r.getVelocity(), r.getTime());
-   }
-
-
-
-   /**
-    * Returns the name of the robot.
-    * 
-    * @return the robot's name.
-    */
-   public String getName() {
-      return this.name;
-   }
-
-   /**
-    * Returns the x value of the robot's current coordinate.
-    * 
-    * @return the robot's x coordinate.
-    */
-   public double getX() {
-      return this.x;
-   }
-
-   /**
-    * Returns the y value of the robot's current coordinate.
-    * 
-    * @return the robot's y coordinate.
-    */
-   public double getY() {
-      return this.y;
-   }
-
-   /**
-    * Returns a <code>Rectangle2D</code> that is the height, width and at the current position of the robot.
-    * 
-    * @return the robot's <code>Rectangle</code>.
-    */
-   public Rectangle2D getRectangle() {
-      return new Rectangle2D.Double(this.getX() - (RobotInfo.WIDTH / 2.0D), this.getY() - (RobotInfo.HEIGHT / 2.0D),
-            RobotInfo.WIDTH, RobotInfo.HEIGHT);
-   }
-
-   /**
-    * Returns the robot's current energy.
-    * 
-    * @return the robot's energy.
-    */
-   public double getEnergy() {
-      return this.energy;
-   }
-
-   /**
-    * Returns the robot's delta energy.
-    * 
-    * @return the robot's delta energy.
-    */
-   public double getDeltaEnergy() {
-      return this.deltaEnergy;
+      this.update(r.getX(), r.getY(), r.getEnergy(), Math.toRadians(r.getHeading()), r.getVelocity(), r.getTime());
    }
 
    /**
@@ -281,91 +223,6 @@ public class RobotData implements Cloneable, Serializable {
       this.energy = DEAD_ENERGY;
    }
 
-   /**
-    * Returns if the robot is dead or not.
-    * 
-    * @return if the robot is dead or not.
-    */
-   public boolean isDead() {
-      return (this.getEnergy() == DEAD_ENERGY);
-   }
-
-   /**
-    * Returns the robot's current heading.
-    * 
-    * @return the robot's heading.
-    */
-   public double getHeading() {
-      return this.heading;
-   }
-
-   /**
-    * Returns the robot's delta heading.
-    * 
-    * @return the robot's delta heading.
-    * @see #deltaHeading
-    */
-   public double getDeltaHeading() {
-      return this.deltaHeading;
-   }
-
-   /**
-    * Returns the robot's average delta heading.
-    * 
-    * @return the robot's average delta heading.
-    * @see #avgDeltaHeading
-    */
-   public double getAvgDeltaHeading() {
-      return this.avgDeltaHeading;
-   }
-
-   /**
-    * Returns the robot's current velocity.
-    * 
-    * @return the robot's velocity.
-    */
-   public double getVelocity() {
-      return this.velocity;
-   }
-
-   /**
-    * Returns the robot's delta velocity.
-    * 
-    * @return the robot's delta velocity.
-    * @see #deltaVelocity
-    */
-   public double getDeltaVelocity() {
-      return this.deltaVelocity;
-   }
-
-   /**
-    * Returns the robot's average velocity.
-    * 
-    * @return the robot's average velocity
-    * @see #avgVelocity
-    */
-   public double getAvgVelocity() {
-      return this.avgVelocity;
-   }
-
-   /**
-    * Returns the robot's average delta velocity.
-    * 
-    * @return the robot's average delta velocity.
-    * @see #avgDeltaVelocity
-    */
-   public double getAvgDeltaVelocity() {
-      return this.avgDeltaVelocity;
-   }
-
-   /**
-    * Returns the time at which the robot was scanned.
-    * 
-    * @return the time at which the robot was scanned.
-    */
-   public long getTime() {
-      return this.time;
-   }
 
 
    public void print(PrintStream console) {
@@ -374,29 +231,29 @@ public class RobotData implements Cloneable, Serializable {
 
    public void print(RobocodeFileOutputStream output) {
       PrintStream file = new PrintStream(output);
-      file.println(getClass() + ": " + this.getName() + " at Time: " + this.getTime());
-      file.println("Coordinates:           (" + Math.round(this.getX()) + ", " + Math.round(this.getY()) + ")");
-      file.println("Energy:                 " + this.getEnergy());
-      file.println("Heading:                " + this.getHeading());
-      file.println("Delta Heading:          " + this.getDeltaHeading());
-      file.println("Average Delta Heading:  " + this.getAvgDeltaHeading());
-      file.println("Velocty:                " + this.getVelocity());
-      file.println("Delta Velocity:         " + this.getDeltaVelocity());
-      file.println("Average Delta Velocity: " + this.getAvgDeltaVelocity());
+      file.println(this.getClass() + ": " + this.name + " at Time: " + this.time);
+      file.println("Coordinates:            " + Format.corrdinateNoDec(this.x, this.y));
+      file.println("Energy:                 " + this.energy);
+      file.println("Heading:                " + this.heading);
+      file.println("Delta Heading:          " + this.deltaHeading);
+      file.println("Average Delta Heading:  " + this.avgDeltaHeading);
+      file.println("Velocty:                " + this.velocity);
+      file.println("Delta Velocity:         " + this.deltaVelocity);
+      file.println("Average Delta Velocity: " + this.avgDeltaVelocity);
       file.println();
    }
 
    @Override
    public String toString() {
-      return new String(getClass() + ": " + this.getName() + ": (" + this.getX() + ", " + this.getY() + ") "
-            + this.getEnergy() + " " + this.getHeading() + " " + this.getVelocity() + " " + this.getTime());
+      return new String(this.getClass() + ": " + this.name + ": " + Format.corrdinateNoDec(this.x, this.y) + " "
+            + this.energy + " " + this.heading + " " + this.velocity + " " + this.time);
    }
 
    public void draw(RobotGraphics grid) {
-      if (!this.isDead()) {
+      if (this.energy == DEAD_ENERGY) {
          if (DrawMenu.getValue("Square", "Robot")) {
             grid.setColor(RobotColor.LIGHT_GRAY);
-            grid.draw(this.getRectangle());
+            grid.drawRectCenter(this.x, this.y, RobotInfo.WIDTH, RobotInfo.HEIGHT);
          }
       }
    }
@@ -407,14 +264,14 @@ public class RobotData implements Cloneable, Serializable {
 
    @Override
    public Object clone() {
-      return copy();
+      return this.copy();
    }
 
    @Override
    public boolean equals(Object obj) {
       if (obj instanceof RobotData) {
          RobotData robot = (RobotData) obj;
-         return robot.getName().equals(this.getName()) && robot.getTime() == this.getTime();
+         return robot.name.equals(this.name) && robot.time == this.time;
       }
       return super.equals(obj);
    }

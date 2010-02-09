@@ -1,6 +1,7 @@
 package dev.manage;
 
 import java.util.HashMap;
+import java.util.List;
 
 import dev.data.EnemyData;
 import dev.data.RobotData;
@@ -16,12 +17,10 @@ import robocode.TeamRobot;
 import robocode.WinEvent;
 
 /**
- * A {@link DataManager} that stores information on the enemies and teammates
- * that are in the current match. Allows the user to easily access the
- * {@link EnemyData} or {@link TeammateData} objects that store the information
- * on the robots and to also update them through the {@link #inEvent(Event)
- * inEvent(Event)} method. This class also uses the singleton pattern because
- * only one instance of this class should ever be used at a time.
+ * A {@link DataManager} that stores information on the enemies and teammates that are in the current match. Allows the
+ * user to easily access the {@link EnemyData} or {@link TeammateData} objects that store the information on the robots
+ * and to also update them through the {@link #inEvent(Event) inEvent(Event)} method. This class also uses the singleton
+ * pattern because only one instance of this class should ever be used at a time.
  * 
  * @author Brian Norman
  * @version 0.0.1 alpha
@@ -29,15 +28,14 @@ import robocode.WinEvent;
 public class RobotManager implements DataManager {
 
    /**
-    * Singleton instance. Only want one {@link RobotManager} floating around so
-    * we used the singleton pattern to achieve this.
+    * Singleton instance. Only want one {@link RobotManager} floating around so we used the singleton pattern to achieve
+    * this.
     */
    private static RobotManager instance;
 
    /**
-    * Creates or returns the singleton instance. If a {@link RobotManager} was
-    * created for another {@link Robot} than that {@link RobotManager} will be
-    * returned.
+    * Creates or returns the singleton instance. If a {@link RobotManager} was created for another {@link Robot} than
+    * that {@link RobotManager} will be returned.
     * 
     * @param robot
     *           the {@link Robot} this {@link DataManger} is for
@@ -52,35 +50,32 @@ public class RobotManager implements DataManager {
 
 
    /**
-    * The {@link Robot} this {@link RobotManager} is for. Provides information
-    * on number of enemies, size of battlefield, etc.
+    * The {@link Robot} this {@link RobotManager} is for. Provides information on number of enemies, size of
+    * battlefield, etc.
     */
    protected Robot                         robot;
 
 
    /**
-    * A {@link HashMap} containing {@link RobotData} entries representing all
-    * the robots that are on the battlefield.
+    * A {@link HashMap} containing {@link RobotData} entries representing all the robots that are on the battlefield.
     */
    protected HashMap<String, RobotData>    robots;
 
    /**
-    * A {@link HashMap} containing {@link EnemyData} entries representing all
-    * the enemies that are on the battlefield.
+    * A {@link HashMap} containing {@link EnemyData} entries representing all the enemies that are on the battlefield.
     */
    protected HashMap<String, EnemyData>    enemies;
 
    /**
-    * A {@link HashMap} containing {@link TeammateData} entries representing all
-    * the teammates that are on the battlefield.
+    * A {@link HashMap} containing {@link TeammateData} entries representing all the teammates that are on the
+    * battlefield.
     */
    protected HashMap<String, TeammateData> teammates;
 
 
    /**
-    * Creates a new {@link RobotManager} for the given {@link Robot}. This
-    * constructor should only ever be called once. If it is called a second
-    * time, a runtime error will be thrown.
+    * Creates a new {@link RobotManager} for the given {@link Robot}. This constructor should only ever be called once.
+    * If it is called a second time, a runtime error will be thrown.
     * 
     * @param robot
     */
@@ -104,9 +99,8 @@ public class RobotManager implements DataManager {
 
 
    /**
-    * The way of passing information about the current round into the
-    * {@link RobotManager}. If certain events happen during the round, they
-    * should be passed in using this method.<br>
+    * The way of passing information about the current round into the {@link RobotManager}. If certain events happen
+    * during the round, they should be passed in using this method.<br>
     * <br>
     * The events that are currently handled are:<br>
     * - {@link ScannedRobotEvent}<br>
@@ -134,9 +128,15 @@ public class RobotManager implements DataManager {
       }
    }
 
+   // TODO documentation: RobotManager - inEvents(List<Event> events)
+   public void inEvents(List<Event> events) {
+      for (Event e : events)
+         inEvent(e);
+   }
+
    /**
-    * The way of passing in a {@link Message} from a teammate. To process
-    * multiple messages simply call this method once for each message.
+    * The way of passing in a {@link Message} from a teammate. To process multiple messages simply call this method once
+    * for each message.
     * 
     * @param m
     *           a {@link Message} from a teammate
@@ -145,8 +145,8 @@ public class RobotManager implements DataManager {
    }
 
    /**
-    * Properly processes a {@link ScannedRobotEvent} by add any unknown scanned
-    * robots or updating any known robots that have been scanned.
+    * Properly processes a {@link ScannedRobotEvent} by add any unknown scanned robots or updating any known robots that
+    * have been scanned.
     * 
     * @param sre
     *           {@link ScannedRobotEvent} to process
@@ -170,8 +170,7 @@ public class RobotManager implements DataManager {
    }
 
    /**
-    * Properly processes a {@link RobotDeathEvent} by updating the status of the
-    * robot that died.
+    * Properly processes a {@link RobotDeathEvent} by updating the status of the robot that died.
     * 
     * @param rde
     *           {@link RobotDeathEvent} to process
@@ -185,9 +184,8 @@ public class RobotManager implements DataManager {
    }
 
    /**
-    * Properly processes a {@link DeathEvent} by updating the status of all the
-    * robots to be dead. This allows each robot to be updated correctly at the
-    * beginning of each round.
+    * Properly processes a {@link DeathEvent} by updating the status of all the robots to be dead. This allows each
+    * robot to be updated correctly at the beginning of each round.
     * 
     * @param de
     *           {@link DeathEvent} to process
@@ -199,9 +197,8 @@ public class RobotManager implements DataManager {
    }
 
    /**
-    * Properly processes a {@link WinEvent} by updating the status of all the
-    * robots to be dead. This allows each robot to be updated correctly at the
-    * beginning of each round.
+    * Properly processes a {@link WinEvent} by updating the status of all the robots to be dead. This allows each robot
+    * to be updated correctly at the beginning of each round.
     * 
     * @param de
     *           {@link WinEvent} to process
@@ -213,9 +210,8 @@ public class RobotManager implements DataManager {
    }
 
    /**
-    * Returns the {@link RobotData} object that corresponds to the robot with
-    * the given name. A default {@link RobotData} object is returned if no robot
-    * is found with that name.
+    * Returns the {@link RobotData} object that corresponds to the robot with the given name. A default
+    * {@link RobotData} object is returned if no robot is found with that name.
     * 
     * @param name
     *           the identifier {@link String}
@@ -227,9 +223,8 @@ public class RobotManager implements DataManager {
    }
 
    /**
-    * Returns the {@link EnemyData} object that corresponds to the enemy with
-    * the given name. A default {@link EnemyData} object is returned if no enemy
-    * is found with that name.
+    * Returns the {@link EnemyData} object that corresponds to the enemy with the given name. A default
+    * {@link EnemyData} object is returned if no enemy is found with that name.
     * 
     * @param name
     *           the identifier {@link String}
@@ -241,9 +236,8 @@ public class RobotManager implements DataManager {
    }
 
    /**
-    * Returns the {@link TeammateData} object that corresponds to the teammate
-    * with the given name. A default {@link TeammateData} object is return if no
-    * teammate is found with that name.
+    * Returns the {@link TeammateData} object that corresponds to the teammate with the given name. A default
+    * {@link TeammateData} object is return if no teammate is found with that name.
     * 
     * @param name
     *           the identifier {@link String}

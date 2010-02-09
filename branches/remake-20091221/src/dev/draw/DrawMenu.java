@@ -4,24 +4,28 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class DrawMenu {
 
-   private static int                   startX      = 0;
-   private static int                   startY      = 1;
+   private static int                   startX        = 0;
+   private static int                   startY        = 1;
 
-   private static int                   recWidth    = 71;
-   private static int                   recHeight   = 13;
+   private static int                   recWidth      = 71;
+   private static int                   recHeight     = 13;
 
-   private static int                   stringX     = 2;
-   private static int                   stringY     = 2;
+   private static int                   baseRecWidth  = 71;
+   private static int                   baseRecHeight = 13;
 
-   private static Color                 colorOpen   = Color.BLUE;
-   private static Color                 colorClosed = Color.RED;
+   private static int                   stringX       = 2;
+   private static int                   stringY       = 2;
 
-   private static boolean               open        = false;
-   private static HashMap<String, Menu> menus       = new HashMap<String, Menu>();
-   private static String                longest     = "Draw Menu";
+   private static Color                 colorOpen     = Color.CYAN;
+   private static Color                 colorClosed   = Color.RED;
+
+   private static boolean               open          = false;
+   private static HashMap<String, Menu> menus         = new HashMap<String, Menu>();
+   private static String                longest       = "Draw Menu";
 
 
    public static boolean getValue(String item, String menu) {
@@ -39,19 +43,19 @@ public class DrawMenu {
             boolean found = false;
 
             // finds item
-            for (int i = 0; i < menus.size() && !found; i++) {
-               found = menus.get(i).inMouseEvent(e, startX + recWidth, startY + (i + 1) * recHeight);
+            Iterator<Menu> iter = menus.values().iterator();
+            for (int i = 0; iter.hasNext() && !found; i++) {
+               found = iter.next().inMenu(e, i);
             }
-
-            // System.out.println(found);
 
             if (!found) {
                double x = e.getX() - startX;
                double y = e.getY() - startY;
                if (x <= recWidth && x >= 0.0D && y >= recHeight) {
-                  for (int i = 0; i < menus.size() && !found; i++) {
+                  iter = menus.values().iterator();
+                  for (int i = 0; iter.hasNext() && !found; i++) {
+                     Menu menu = iter.next();
                      if (y <= (i + 2) * recHeight) {
-                        Menu menu = menus.get(i);
                         if (menu.isOpen()) {
                            menu.close();
                         } else {
@@ -73,30 +77,38 @@ public class DrawMenu {
          } else {
             double x = e.getX() - startX;
             double y = e.getY() - startY;
-            if (x <= recWidth && y <= recHeight && y >= 0.0D && x >= 0.0D)
+            if (x <= baseRecWidth && y <= baseRecHeight && y >= 0.0D && x >= 0.0D)
                open = true;
          }
       }
    }
 
    public static void draw(Graphics graphics) {
-      recWidth = (int) graphics.getFontMetrics().getStringBounds(longest, graphics).getWidth() + 15;
-      recHeight = (int) graphics.getFontMetrics().getStringBounds(longest, graphics).getHeight() + 2;
+      Color c = graphics.getColor();
+
+      baseRecWidth = (int) graphics.getFontMetrics().getStringBounds("Draw Menu", graphics).getWidth() + 20;
+      baseRecHeight = (int) graphics.getFontMetrics().getStringBounds(longest, graphics).getHeight() + 2;
 
       if (open) {
-         int i = 1;
+         recWidth = (int) graphics.getFontMetrics().getStringBounds(longest, graphics).getWidth();
+         recHeight = baseRecHeight;
+
+         int i = 0;
          for (String key : menus.keySet()) {
             Menu menu = menus.get(key);
             graphics.setColor(menu.isOpen() ? colorOpen : colorClosed);
-            graphics.drawRect(startX, startY + i * recHeight, recWidth - 1, recHeight - 1);
-            graphics.drawString(key, startX + stringX, startY + stringY + i * recHeight);
-            menu.draw(graphics, startX + recWidth, startY + i * recHeight);
+            graphics.drawRect(startX, startY + (i + 1) * recHeight, recWidth - 1, recHeight - 1);
+            graphics.drawString(key, startX + stringX, startY + stringY + (i + 1) * recHeight);
+            menu.draw(graphics, i);
             i++;
          }
       }
+
       graphics.setColor(open ? colorOpen : colorClosed);
-      graphics.drawRect(startX, startY, recWidth - 1, recHeight - 1);
+      graphics.drawRect(startX, startY, baseRecWidth - 1, baseRecHeight - 1);
       graphics.drawString("Draw Menu", startX + stringX, startY + stringY);
+
+      graphics.setColor(c);
    }
 
 
@@ -110,37 +122,41 @@ public class DrawMenu {
       private HashMap<String, Boolean> items    = new HashMap<String, Boolean>();
       private String                   longest  = " ";
 
+      private int                      recWidth = 71;
 
       public boolean getValue(String item) {
-         Boolean value = items.get(item);
+         Boolean value = this.items.get(item);
          if (value == null) {
-            items.put(item, value = false);
-            longest = (longest.length() > item.length() ? longest : item);
+            this.items.put(item, value = false);
+            this.longest = (this.longest.length() > item.length() ? this.longest : item);
          }
          return value;
       }
 
       public boolean isOpen() {
-         return open;
+         return this.open;
       }
 
       public void open() {
-         open = true;
+         this.open = true;
       }
 
       public void close() {
-         open = false;
+         this.open = false;
       }
 
-      public boolean inMouseEvent(MouseEvent e, double startX, double startY) {
-         if (open && e.getID() == MouseEvent.MOUSE_CLICKED) {
-            double x = e.getX() - startX;
-            double y = e.getY() - startY;
-            if (x <= recWidth && x >= 0.0D && y >= 0.0D) {
-               for (int i = 0; i < items.keySet().size(); i++) {
+      public boolean inMenu(MouseEvent e, int menuNumber) {
+         if (this.open) {
+            int menuStartX = startX + DrawMenu.recWidth;
+            int menuStartY = startY + (menuNumber + 1) * recHeight;
+
+            int x = e.getX() - menuStartX;
+            int y = e.getY() - menuStartY;
+            if (x <= this.recWidth && x >= 0.0D && y >= 0.0D) {
+               for (int i = 0; i < this.items.keySet().size(); i++) {
                   if (y <= (i + 1) * recHeight) {
-                     String s = (String) (items.keySet().toArray())[i];
-                     items.put(s, !items.get(s));
+                     String s = (String) (this.items.keySet().toArray())[i];
+                     this.items.put(s, !this.items.get(s));
                      return true;
                   }
                }
@@ -149,15 +165,18 @@ public class DrawMenu {
          return false;
       }
 
-      public void draw(Graphics graphics, int startX, int startY) {
-         if (open) {
-            int recWidth = (int) graphics.getFontMetrics().getStringBounds(longest, graphics).getWidth() + 15;
+      public void draw(Graphics graphics, int menuNumber) {
+         if (this.open) {
+            this.recWidth = (int) graphics.getFontMetrics().getStringBounds(this.longest, graphics).getWidth() + 20;
+
+            int menuStartX = startX + DrawMenu.recWidth;
+            int menuStartY = startY + (menuNumber + 1) * recHeight;
 
             int i = 0;
-            for (String key : items.keySet()) {
-               graphics.setColor(items.get(key) ? ITEM_ON : ITEM_OFF);
-               graphics.drawRect(startX, startY + i * recHeight, recWidth - 1, recHeight - 1);
-               graphics.drawString(key, startX + stringX, startY + stringY + i * recHeight);
+            for (String key : this.items.keySet()) {
+               graphics.setColor(this.items.get(key) ? ITEM_ON : ITEM_OFF);
+               graphics.drawRect(menuStartX, menuStartY + i * recHeight, this.recWidth - 1, recHeight - 1);
+               graphics.drawString(key, menuStartX + stringX, menuStartY + stringY + i * recHeight);
                i++;
             }
          }

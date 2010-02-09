@@ -7,36 +7,46 @@ import dev.Utils;
 
 public class Dimension {
 
+   public void print() {
+      System.out.print(this.scale.getClass() + ": ");
+      for (Vector v : this.vectors) {
+         System.out.print(v.getComponent(this.scale) + " ");
+      }
+      System.out.println();
+   }
+
+
+
    private Scale              scale;
    private LinkedList<Vector> vectors;
 
    public Dimension(Scale s) {
       this.scale = s;
-      vectors = new LinkedList<Vector>();
+      this.vectors = new LinkedList<Vector>();
    }
 
    public Scale getScale() {
-      return scale;
+      return this.scale;
    }
 
    public void add(Vector v) {
       if (v != null)
-         vectors.add(binarySearch(v), v);
+         this.vectors.add(this.binarySearch(v), v);
    }
 
    public LinkedList<Vector> getCluster(Vector center, int size) {
       LinkedList<Vector> cluster = new LinkedList<Vector>();
 
-      int index = binarySearch(center);
-      ListIterator<Vector> iterN = vectors.listIterator(index);
-      ListIterator<Vector> iterP = vectors.listIterator(index);
+      int index = this.binarySearch(center);
+      ListIterator<Vector> iterN = this.vectors.listIterator(index);
+      ListIterator<Vector> iterP = this.vectors.listIterator(index);
 
       if (iterN.hasNext()) {
          if (iterP.hasPrevious()) {
             Vector vN = iterN.next();
             Vector vP = iterP.previous();
-            double cN = Utils.abs(scale.compare(center, vN));
-            double cP = Utils.abs(scale.compare(center, vP));
+            double cN = Utils.abs(this.scale.compare(center, vN));
+            double cP = Utils.abs(this.scale.compare(center, vP));
 
             do {
                if (vN == null) {
@@ -57,7 +67,7 @@ public class Dimension {
                      cluster.add(vN);
                      if (iterN.hasNext()) {
                         vN = iterN.next();
-                        cN = Utils.abs(scale.compare(center, vN));
+                        cN = Utils.abs(this.scale.compare(center, vN));
                      } else {
                         vN = null;
                         cN = Double.NaN;
@@ -68,7 +78,7 @@ public class Dimension {
                      cluster.add(vP);
                      if (iterP.hasPrevious()) {
                         vP = iterP.previous();
-                        cP = Utils.abs(scale.compare(center, vP));
+                        cP = Utils.abs(this.scale.compare(center, vP));
                      } else {
                         vP = null;
                         cP = Double.NaN;
@@ -101,13 +111,13 @@ public class Dimension {
     */
    private int binarySearch(Vector v) {
       int first = 0;
-      int last = vectors.size();
+      int last = this.vectors.size();
       int mid = (last - first) / 2;
 
       while (first != last) {
          mid = (last - first) / 2;
-         Vector m = vectors.get(mid);
-         int sign_m = Utils.signum(scale.compare(v, m));
+         Vector m = this.vectors.get(mid);
+         int sign_m = Utils.signum(this.scale.compare(v, m));
          if (sign_m == 0) {
             first = last = mid;
          } else if (sign_m == 1) {

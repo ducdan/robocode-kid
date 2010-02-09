@@ -2,14 +2,16 @@ package dev.cluster.scales;
 
 import dev.cluster.Scale;
 import dev.data.RobotData;
+import dev.data.RobotDataAccesser;
 
 public class DeltaVelocity extends Scale {
 
    @Override
    public double value(RobotData view, RobotData reference) {
-      return view.getDeltaVelocity();
+      return new RobotDataAccesser(view).getDeltaVelocity();
    }
 
+   @Override
    public String toString() {
       return "Delta Velocity";
    }
