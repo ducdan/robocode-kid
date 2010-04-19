@@ -2,13 +2,12 @@ package dev.cluster.scales;
 
 import dev.cluster.Scale;
 import dev.data.RobotData;
-import dev.data.RobotDataAccesser;
 
 public class BulletFirePower extends Scale {
 
    @Override
-   public double value(RobotData view, RobotData reference) {
-      return Math.abs(new RobotDataAccesser(reference).getDeltaEnergy());
+   protected double getValue(RobotData view, RobotData reference) {
+      return Math.abs(reference.getDeltaEnergy());
    }
 
    @Override

@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Iterator;
 
+// BORED documentation: dev.draw.DrawMenu
 public class DrawMenu {
 
    private static int                   startX        = 0;
@@ -29,12 +30,16 @@ public class DrawMenu {
 
 
    public static boolean getValue(String item, String menu) {
+      return getValue(item, menu, false);
+   }
+
+   public static boolean getValue(String item, String menu, boolean def) {
       Menu m = menus.get(menu);
       if (m == null) {
          menus.put(menu, m = new Menu());
          longest = (longest.length() > item.length() ? longest : item);
       }
-      return m.getValue(item);
+      return m.getValue(item, def);
    }
 
    public static void inMouseEvent(MouseEvent e) {
@@ -124,10 +129,10 @@ public class DrawMenu {
 
       private int                      recWidth = 71;
 
-      public boolean getValue(String item) {
+      public boolean getValue(String item, boolean def) {
          Boolean value = this.items.get(item);
          if (value == null) {
-            this.items.put(item, value = false);
+            this.items.put(item, value = def);
             this.longest = (this.longest.length() > item.length() ? this.longest : item);
          }
          return value;

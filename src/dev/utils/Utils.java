@@ -1,4 +1,4 @@
-package dev;
+package dev.utils;
 
 import java.awt.geom.Point2D;
 
@@ -30,11 +30,11 @@ public final class Utils {
    }
 
    public static final double getX(double x, double d, double a) {
-      return x + d * Trig.t_sin(a);
+      return x + d * Trig.sin(a);
    }
 
    public static final double getY(double y, double d, double a) {
-      return y + d * Trig.t_cos(a);
+      return y + d * Trig.cos(a);
    }
 
    public static final Point2D project(Point2D p, double d, double a) {

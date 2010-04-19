@@ -1,5 +1,6 @@
 package dev.data;
 
+import java.awt.geom.Rectangle2D;
 import java.io.PrintStream;
 import java.io.Serializable;
 
@@ -7,11 +8,9 @@ import kid.info.RobotInfo;
 import robocode.RobocodeFileOutputStream;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
-import dev.Format;
-import dev.Utils;
-import dev.draw.DrawMenu;
-import dev.draw.RobotColor;
 import dev.draw.RobotGraphics;
+import dev.utils.Format;
+import dev.utils.Utils;
 
 public class RobotData implements Cloneable, Serializable {
 
@@ -124,7 +123,8 @@ public class RobotData implements Cloneable, Serializable {
    }
 
    public RobotData(Robot r) {
-      this.init(r.getName(), r.getX(), r.getY(), r.getEnergy(), Math.toRadians(r.getHeading()), r.getVelocity(), r.getTime());
+      this.init(r.getName(), r.getX(), r.getY(), r.getEnergy(), Math.toRadians(r.getHeading()), r.getVelocity(), r
+            .getTime());
    }
 
    protected RobotData(RobotData r) {
@@ -224,6 +224,147 @@ public class RobotData implements Cloneable, Serializable {
    }
 
 
+   /**
+    * Returns the name of the robot.
+    * 
+    * @return the robot's name.
+    */
+   public String getName() {
+      return this.name;
+   }
+
+   /**
+    * Returns the x value of the robot's current coordinate.
+    * 
+    * @return the robot's x coordinate.
+    */
+   public double getX() {
+      return this.x;
+   }
+
+   /**
+    * Returns the y value of the robot's current coordinate.
+    * 
+    * @return the robot's y coordinate.
+    */
+   public double getY() {
+      return this.y;
+   }
+
+   /**
+    * Returns a <code>Rectangle2D</code> that is the height, width and at the current position of the robot.
+    * 
+    * @return the robot's <code>Rectangle</code>.
+    */
+   public Rectangle2D getRectangle() {
+      return new Rectangle2D.Double(this.getX() - (RobotInfo.WIDTH / 2.0D), this.getY() - (RobotInfo.HEIGHT / 2.0D),
+            RobotInfo.WIDTH, RobotInfo.HEIGHT);
+   }
+
+   /**
+    * Returns the robot's current energy.
+    * 
+    * @return the robot's energy.
+    */
+   public double getEnergy() {
+      return this.energy;
+   }
+
+   /**
+    * Returns the robot's delta energy.
+    * 
+    * @return the robot's delta energy.
+    */
+   public double getDeltaEnergy() {
+      return this.deltaEnergy;
+   }
+
+   /**
+    * Returns if the robot is dead or not.
+    * 
+    * @return if the robot is dead or not.
+    */
+   public boolean isDead() {
+      return (this.getEnergy() == RobotData.DEAD_ENERGY);
+   }
+
+   /**
+    * Returns the robot's current heading.
+    * 
+    * @return the robot's heading.
+    */
+   public double getHeading() {
+      return this.heading;
+   }
+
+   /**
+    * Returns the robot's delta heading.
+    * 
+    * @return the robot's delta heading.
+    * @see #deltaHeading
+    */
+   public double getDeltaHeading() {
+      return this.deltaHeading;
+   }
+
+   /**
+    * Returns the robot's average delta heading.
+    * 
+    * @return the robot's average delta heading.
+    * @see #avgDeltaHeading
+    */
+   public double getAvgDeltaHeading() {
+      return this.avgDeltaHeading;
+   }
+
+   /**
+    * Returns the robot's current velocity.
+    * 
+    * @return the robot's velocity.
+    */
+   public double getVelocity() {
+      return this.velocity;
+   }
+
+   /**
+    * Returns the robot's delta velocity.
+    * 
+    * @return the robot's delta velocity.
+    * @see #deltaVelocity
+    */
+   public double getDeltaVelocity() {
+      return this.deltaVelocity;
+   }
+
+   /**
+    * Returns the robot's average velocity.
+    * 
+    * @return the robot's average velocity
+    * @see #avgVelocity
+    */
+   public double getAvgVelocity() {
+      return this.avgVelocity;
+   }
+
+   /**
+    * Returns the robot's average delta velocity.
+    * 
+    * @return the robot's average delta velocity.
+    * @see #avgDeltaVelocity
+    */
+   public double getAvgDeltaVelocity() {
+      return this.avgDeltaVelocity;
+   }
+
+   /**
+    * Returns the time at which the robot was scanned.
+    * 
+    * @return the time at which the robot was scanned.
+    */
+   public long getTime() {
+      return this.time;
+   }
+
 
    public void print(PrintStream console) {
       console.println(this.toString());
@@ -250,12 +391,12 @@ public class RobotData implements Cloneable, Serializable {
    }
 
    public void draw(RobotGraphics grid) {
-      if (this.energy == DEAD_ENERGY) {
-         if (DrawMenu.getValue("Square", "Robot")) {
-            grid.setColor(RobotColor.LIGHT_GRAY);
-            grid.drawRectCenter(this.x, this.y, RobotInfo.WIDTH, RobotInfo.HEIGHT);
-         }
-      }
+      // if (this.energy == DEAD_ENERGY) {
+      // if (DrawMenu.getValue("Square", "Robot")) {
+      // grid.setColor(RobotColor.LIGHT_GRAY);
+      // grid.drawRectCenter(this.x, this.y, RobotInfo.WIDTH, RobotInfo.HEIGHT);
+      // }
+      // }
    }
 
    public RobotData copy() {

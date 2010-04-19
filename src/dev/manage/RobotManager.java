@@ -3,11 +3,6 @@ package dev.manage;
 import java.util.HashMap;
 import java.util.List;
 
-import dev.data.EnemyData;
-import dev.data.RobotData;
-import dev.data.TeammateData;
-import dev.team.Message;
-
 import robocode.DeathEvent;
 import robocode.Event;
 import robocode.Robot;
@@ -15,9 +10,13 @@ import robocode.RobotDeathEvent;
 import robocode.ScannedRobotEvent;
 import robocode.TeamRobot;
 import robocode.WinEvent;
+import dev.data.EnemyData;
+import dev.data.RobotData;
+import dev.data.TeammateData;
+import dev.team.Message;
 
 /**
- * A {@link DataManager} that stores information on the enemies and teammates that are in the current match. Allows the
+ * A {@link EventHandler} that stores information on the enemies and teammates that are in the current match. Allows the
  * user to easily access the {@link EnemyData} or {@link TeammateData} objects that store the information on the robots
  * and to also update them through the {@link #inEvent(Event) inEvent(Event)} method. This class also uses the singleton
  * pattern because only one instance of this class should ever be used at a time.
@@ -25,7 +24,7 @@ import robocode.WinEvent;
  * @author Brian Norman
  * @version 0.0.1 alpha
  */
-public class RobotManager implements DataManager {
+public class RobotManager implements EventHandler, MessageHandler {
 
    /**
     * Singleton instance. Only want one {@link RobotManager} floating around so we used the singleton pattern to achieve
@@ -34,8 +33,8 @@ public class RobotManager implements DataManager {
    private static RobotManager instance;
 
    /**
-    * Creates or returns the singleton instance. If a {@link RobotManager} was created for another {@link Robot} than
-    * that {@link RobotManager} will be returned.
+    * Creates and/or returns the singleton instance. If a {@link RobotManager} was created for another {@link Robot}
+    * than that {@link RobotManager} will be returned.
     * 
     * @param robot
     *           the {@link Robot} this {@link DataManger} is for
@@ -47,6 +46,16 @@ public class RobotManager implements DataManager {
       return instance;
    }
 
+   /**
+    * Returns the singleton instance. If a {@link RobotManager} was created for another {@link Robot} than that
+    * {@link RobotManager} will be returned. If no instance has been created yet, {@code null} will be returned.
+    * 
+    * @return the singleton instance of this {@link RobotManager}
+    */
+   public static RobotManager getInstance() {
+      return instance;
+   }
+
 
 
    /**
@@ -54,7 +63,6 @@ public class RobotManager implements DataManager {
     * battlefield, etc.
     */
    protected Robot                         robot;
-
 
    /**
     * A {@link HashMap} containing {@link RobotData} entries representing all the robots that are on the battlefield.
@@ -91,8 +99,9 @@ public class RobotManager implements DataManager {
       if (robot instanceof TeamRobot) {
          TeamRobot tRobot = (TeamRobot) robot;
          if (tRobot.getTeammates() != null) {
-            this.teammates = new HashMap<String, TeammateData>(tRobot.getTeammates().length);
-            this.enemies = new HashMap<String, EnemyData>(robot.getOthers() - tRobot.getTeammates().length);
+            int teammates = tRobot.getTeammates().length;
+            this.teammates = new HashMap<String, TeammateData>(teammates);
+            this.enemies = new HashMap<String, EnemyData>(robot.getOthers() - teammates);
          }
       }
    }
@@ -128,7 +137,13 @@ public class RobotManager implements DataManager {
       }
    }
 
-   // TODO documentation: RobotManager - inEvents(List<Event> events)
+   /**
+    * A quick way of passing information about the current round into the {@link RobotManager}.
+    * 
+    * @param events
+    *           the current {@link Event}s being processed.
+    * @see #inEvent(Event)
+    */
    public void inEvents(List<Event> events) {
       for (Event e : events)
          inEvent(e);
@@ -142,6 +157,7 @@ public class RobotManager implements DataManager {
     *           a {@link Message} from a teammate
     */
    public void inMessage(Message m) {
+      // TODO code: dev.manage.RobotManager#inMessage(Message)
    }
 
    /**
@@ -154,18 +170,15 @@ public class RobotManager implements DataManager {
    private void handleScannedRobotEvent(ScannedRobotEvent sre) {
       String name = sre.getName();
       if (robots.containsKey(name)) {
-         RobotData r = robots.get(name);
-         r.update(sre, robot);
+         robots.get(name).update(sre, robot);
+      } else if (robot instanceof TeamRobot && ((TeamRobot) robot).isTeammate(name)) {
+         TeammateData t = new TeammateData(sre, robot);
+         teammates.put(name, t);
+         robots.put(name, t);
       } else {
-         if (robot instanceof TeamRobot && ((TeamRobot) robot).isTeammate(name)) {
-            TeammateData t = new TeammateData(sre, robot);
-            teammates.put(name, t);
-            robots.put(name, t);
-         } else {
-            EnemyData e = new EnemyData(sre, robot);
-            enemies.put(name, e);
-            robots.put(name, e);
-         }
+         EnemyData e = new EnemyData(sre, robot);
+         enemies.put(name, e);
+         robots.put(name, e);
       }
    }
 
@@ -219,7 +232,7 @@ public class RobotManager implements DataManager {
     */
    public RobotData getRobot(String name) {
       RobotData r = robots.get(name);
-      return (r == null ? new RobotData() : null);
+      return (r == null ? new RobotData() : r);
    }
 
    /**
@@ -232,7 +245,7 @@ public class RobotManager implements DataManager {
     */
    public EnemyData getEnemy(String name) {
       EnemyData e = enemies.get(name);
-      return (e == null ? new EnemyData() : null);
+      return (e == null ? new EnemyData() : e);
    }
 
    /**
@@ -245,7 +258,7 @@ public class RobotManager implements DataManager {
     */
    public TeammateData getTeammate(String name) {
       TeammateData t = teammates.get(name);
-      return (t == null ? new TeammateData() : null);
+      return (t == null ? new TeammateData() : t);
    }
 
 }

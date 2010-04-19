@@ -5,9 +5,9 @@ import java.awt.geom.Rectangle2D;
 import robocode.AdvancedRobot;
 import robocode.Robot;
 import robocode.Rules;
-import dev.Format;
-import dev.Trig;
-import dev.Utils;
+import dev.utils.Format;
+import dev.utils.Trig;
+import dev.utils.Utils;
 
 public class PsudoRobot {
 

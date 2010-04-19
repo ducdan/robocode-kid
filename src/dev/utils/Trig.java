@@ -1,4 +1,4 @@
-package dev;
+package dev.utils;
 
 /**
  * @author Alexander Schultz (a.k.a. Rednaxela)
@@ -33,18 +33,18 @@ public final class Trig {
 
 
    static {
-      new Thread(new Runnable() {
-         @Override
-         public void run() {
-            for (int i = 0; i < TRIG_DIVISIONS; i++) {
-               sineTable[i] = Math.sin(i / K);
-            }
-            for (int i = 0; i < TRIG_HIGH_DIVISIONS; i++) {
-               tanTable[i] = Math.tan(i / TAN_K);
-               acosTable[i] = Math.acos(i / ACOS_K - 1);
-            }
-         }
-      }).start();
+      // new Thread(new Runnable() {
+      // @Override
+      // public void run() {
+      // for (int i = 0; i < TRIG_DIVISIONS; i++) {
+      // sineTable[i] = Math.sin(i / K);
+      // }
+      // for (int i = 0; i < TRIG_HIGH_DIVISIONS; i++) {
+      // tanTable[i] = Math.tan(i / TAN_K);
+      // acosTable[i] = Math.acos(i / ACOS_K - 1);
+      // }
+      // }
+      // }).start();
    }
 
    private Trig() {

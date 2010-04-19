@@ -1,11 +1,19 @@
 package dev.team;
 
+import dev.data.RobotData;
+
 public abstract class Message {
 
-   protected long time;
+   private long      time;
+   private RobotData sender;
 
-   public Message(long time) {
+   public Message(RobotData sender, long time) {
+      this.sender = sender;
       this.time = time;
+   }
+
+   public RobotData getSender() {
+      return sender;
    }
 
    public long getTime() {
