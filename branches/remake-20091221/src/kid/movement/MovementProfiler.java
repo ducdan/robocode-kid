@@ -13,7 +13,6 @@ import kid.data.Printable;
 import kid.data.factor.GuessFactor;
 import kid.graphics.DrawMenu;
 import kid.graphics.RGraphics;
-import kid.info.RobotInfo;
 import kid.robot.EnemyData;
 import kid.robot.RobotData;
 import kid.utils.Utils;
@@ -34,39 +33,38 @@ import robocode.WinEvent;
 // TODO documentation: class
 
 /**
- * A class that attempts to see a given robot in the same way that its enemies see it. The actual
- * representation of the enemy's view is most often, if not always, wrong, but it still provides a
- * semi-accurate guess as to how the enemy see it. <code>{@link package_class_member label}</code>
+ * A class that attempts to see a given robot in the same way that its enemies see it. The actual representation of the
+ * enemy's view is most often, if not always, wrong, but it still provides a semi-accurate guess as to how the enemy see
+ * it. <code>{@link package_class_member label}</code>
  * 
  * @author Brian Norman
  * @version 0.0.1 Beta
  */
 public class MovementProfiler implements Drawable, Printable {
 
-   public static final int PROFILE_VEIWS = 5;
-   public static final int ENEMY_LAG = -2;
+   public static final int                                                  PROFILE_VEIWS = 5;
+   public static final int                                                  ENEMY_LAG     = -2;
 
-   private AdvancedRobot robot;
-   private RobotInfo info;
-   private static boolean flattener = false;
+   private AdvancedRobot                                                    robot;
+   private static boolean                                                   flattener     = false;
 
-   private RobotData[] profiles;
-   private int profiles_position;
+   private RobotData[]                                                      profiles;
+   private int                                                              profiles_position;
 
-   private GuessFactor[] latest;
-   private int latestPosition;
+   private GuessFactor[]                                                    latest;
+   private int                                                              latestPosition;
 
-   private GuessFactor[] latestHits;
-   private int latestHitsPosition;
+   private GuessFactor[]                                                    latestHits;
+   private int                                                              latestHitsPosition;
 
-   private RobotData enemy;
-   private ArrayList<DataWave<GuessFactor, RobotData, RobotData>> enemyWaves;
-   private ArrayList<DataWave<GuessFactor, RobotData, RobotData>> enemyWavesCF;
+   private RobotData                                                        enemy;
+   private ArrayList<DataWave<GuessFactor, RobotData, RobotData>>           enemyWaves;
+   private ArrayList<DataWave<GuessFactor, RobotData, RobotData>>           enemyWavesCF;
 
-   private static HashMap<String, Space<GuessFactor, RobotData, RobotData>> hitSpace = null;
-   private static HashMap<String, Space<GuessFactor, RobotData, RobotData>> allSpace = null;
-   private Comparison[] comparisons = null;
-   private int dataPerWave = 10;
+   private static HashMap<String, Space<GuessFactor, RobotData, RobotData>> hitSpace      = null;
+   private static HashMap<String, Space<GuessFactor, RobotData, RobotData>> allSpace      = null;
+   private Comparison[]                                                     comparisons   = null;
+   private int                                                              dataPerWave   = 10;
 
    public MovementProfiler(AdvancedRobot myRobot, Comparison[] comparisons) {
       init(myRobot, comparisons, -1);
@@ -78,7 +76,6 @@ public class MovementProfiler implements Drawable, Printable {
 
    private void init(AdvancedRobot r, Comparison[] c, int d) {
       this.robot = r;
-      this.info = new RobotInfo(this.robot);
 
       this.profiles = new RobotData[PROFILE_VEIWS];
       this.profiles[0] = new RobotData(this.robot);
@@ -106,7 +103,7 @@ public class MovementProfiler implements Drawable, Printable {
    }
 
    public void inEvent(final Event event) {
-      if (info.getOthers() <= 1) {
+      if (robot.getOthers() <= 1) {
          if (event instanceof ScannedRobotEvent)
             handleScannedRobot((ScannedRobotEvent) event);
          else if (event instanceof DeathEvent)
@@ -160,13 +157,11 @@ public class MovementProfiler implements Drawable, Printable {
    }
 
    /**
-    * A function that handles all onScannedRobot events that occur during the duration of the match.
-    * This function should not be called directly but will be called when an event of this type is
-    * passed to <i>onEvent()</i>. <br>
+    * A function that handles all onScannedRobot events that occur during the duration of the match. This function
+    * should not be called directly but will be called when an event of this type is passed to <i>onEvent()</i>. <br>
     * <br>
-    * A note on the code: Until the end of the function, the variable <i>enemy</i> refers to the
-    * previous turn. It is updated at the very end of the function. This is done to make comparison
-    * of the current turn and the previous one.
+    * A note on the code: Until the end of the function, the variable <i>enemy</i> refers to the previous turn. It is
+    * updated at the very end of the function. This is done to make comparison of the current turn and the previous one.
     * 
     * @param event
     **/
@@ -208,16 +203,16 @@ public class MovementProfiler implements Drawable, Printable {
    }
 
    private final void handleHitByBullet(final HitByBulletEvent event) {
-      handleBulletEvent(event.getBullet());
+      handleBulletEvent(event.getBullet(), event.getTime());
    }
 
    private final void handleBulletHitBullet(final BulletHitBulletEvent event) {
-      handleBulletEvent(event.getHitBullet());
+      handleBulletEvent(event.getHitBullet(), event.getTime());
    }
 
-   private final void handleBulletEvent(final Bullet b) {
+   private final void handleBulletEvent(final Bullet b, long eventTime) {
       if (enemy != null && !enemy.isDummy()) {
-         DataWave<GuessFactor, RobotData, RobotData> wave = Utils.findWaveMatch(enemyWaves, b, robot.getTime());
+         DataWave<GuessFactor, RobotData, RobotData> wave = Utils.findWaveMatch(enemyWaves, b, eventTime);
          if (wave != null) {
             enemyWaves.remove(wave);
             GuessFactor gf = new GuessFactor(Utils.getGuessFactor(wave, wave.getView(), b));
