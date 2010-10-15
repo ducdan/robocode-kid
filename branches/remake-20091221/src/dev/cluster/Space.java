@@ -7,24 +7,24 @@ import java.util.LinkedList;
 import dev.data.RobotData;
 import dev.utils.Utils;
 
-public class Space {
+public class Space<E> {
 
    public void print() {
-      for (Dimension d : this.dimensions) {
+      for (Dimension<E> d : this.dimensions) {
          d.print();
       }
    }
 
 
 
-   private LinkedList<Dimension> dimensions;
-   private Collection<Scale>     scales;
+   private LinkedList<Dimension<E>> dimensions;
+   private Collection<Scale>        scales;
 
    public Space(Collection<Scale> scales) {
       this.scales = scales;
-      this.dimensions = new LinkedList<Dimension>();
+      this.dimensions = new LinkedList<Dimension<E>>();
       for (Scale s : scales)
-         this.dimensions.add(new Dimension(s));
+         this.dimensions.add(new Dimension<E>(s));
    }
 
    public Space(Scale[] scales) {
@@ -32,19 +32,19 @@ public class Space {
    }
 
 
-   public void add(RobotData view, RobotData reference) {
-      Vector v = new Vector(this.scales, view.copy(), reference.copy());
-      for (Dimension d : this.dimensions) {
+   public void add(RobotData view, RobotData reference, E data) {
+      Vector<E> v = new Vector<E>(this.scales, view.copy(), reference.copy(), data);
+      for (Dimension<E> d : this.dimensions) {
          d.add(v);
       }
    }
 
-   public LinkedList<Vector> getClustor(RobotData view, RobotData reference, int size) {
-      Vector center = new Vector(this.scales, view, reference);
-      LinkedList<SortVector> sorted = new LinkedList<SortVector>();
-      for (Dimension d : this.dimensions) {
-         for (Vector v : d.getCluster(center, size)) {
-            if (!sorted.contains(new SortVector(v, 0.0))) {
+   public LinkedList<E> getClustor(RobotData view, RobotData reference, int size) {
+      Vector<E> center = new Vector<E>(this.scales, view, reference, null);
+      LinkedList<SortVector<E>> sorted = new LinkedList<SortVector<E>>();
+      for (Dimension<E> d : this.dimensions) {
+         for (Vector<E> v : d.getCluster(center, size)) {
+            if (!sorted.contains(new SortVector<E>(v, 0.0))) {
 
                // TODO code: make so that one scale does not have precedence over another
                double sort = 0.0;
@@ -57,7 +57,7 @@ public class Space {
                int mid = (last + first) / 2;
                while (first < last) {
                   mid = (last + first) / 2;
-                  SortVector m = sorted.get(mid);
+                  SortVector<E> m = sorted.get(mid);
                   int sign_m = Utils.signum(m.sort - sort);
                   // smaller values at the beginning
                   if (sign_m == 0) {
@@ -69,12 +69,12 @@ public class Space {
                   }
                }
 
-               sorted.add(mid, new SortVector(v, sort));
+               sorted.add(mid, new SortVector<E>(v, sort));
 
                // remove any vectors that make the cluster to large
                if (sorted.size() > size) {
-                  SortVector v1 = sorted.get(size);
-                  SortVector v2 = sorted.get(size - 1);
+                  SortVector<E> v1 = sorted.get(size);
+                  SortVector<E> v2 = sorted.get(size - 1);
 
                   // only remove vectors that don't tie for the last position
                   if (v1.sort != v2.sort) {
@@ -87,44 +87,39 @@ public class Space {
          }
       }
 
-      LinkedList<Vector> cluster = new LinkedList<Vector>();
-      for (SortVector sv : sorted)
-         cluster.add(sv);
+      LinkedList<E> cluster = new LinkedList<E>();
+      for (SortVector<E> sv : sorted)
+         cluster.add(sv.getData());
       return cluster;
    }
 
 
-   private static class SortVector extends Vector {
+   private static class SortVector<E> extends Vector<E> {
 
-      private Vector vector;
-      private double sort;
+      private Vector<E> vector;
+      private double    sort;
 
-      public SortVector(Vector v, double sort) {
+      public SortVector(Vector<E> v, double sort) {
          this.vector = v;
          this.sort = sort;
       }
 
-      // @Override
-      // public RobotData getView() {
-      // return this.vector.getView();
-      // }
-      //
-      // @Override
-      // public RobotData getReference() {
-      // return this.vector.getReference();
-      // }
-
       @Override
-      protected Double getComponent(Scale s) {
+      protected double getComponent(Scale s) {
          return this.vector.getComponent(s);
       }
 
       @Override
+      public E getData() {
+         return this.vector.getData();
+      }
+
+      @Override
       public boolean equals(Object obj) {
-         if (obj instanceof SortVector) {
-            SortVector sortVec = (SortVector) obj;
+         if (obj instanceof SortVector<?>) {
+            SortVector<?> sortVec = (SortVector<?>) obj;
             return this.vector.equals(sortVec.vector);
-         } else if (obj instanceof Vector) {
+         } else if (obj instanceof Vector<?>) {
             return this.vector.equals(obj);
          } else {
             return super.equals(obj);

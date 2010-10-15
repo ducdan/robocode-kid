@@ -181,12 +181,6 @@ public class RobotData implements Cloneable, Serializable {
    public void update(double x, double y, double e, double h, double v, long t) {
       long dT = (t - this.time);
       if (dT != 0) {
-         this.x = x;
-         this.y = y;
-         this.energy = e;
-         this.heading = h;
-         this.velocity = v;
-         this.time = t;
          if (dT < 0) {
             this.deltaEnergy = 0.0D;
             this.deltaHeading = 0.0D;
@@ -203,6 +197,12 @@ public class RobotData implements Cloneable, Serializable {
                   .avg(this.avgDeltaVelocity, RobotData.AVERAGE_WEIGHT, this.deltaVelocity, 1.0D);
             this.avgVelocity = Utils.avg(this.avgVelocity, RobotData.AVERAGE_WEIGHT, this.velocity, 1.0D);
          }
+         this.x = x;
+         this.y = y;
+         this.energy = e;
+         this.heading = h;
+         this.velocity = v;
+         this.time = t;
       }
    }
 

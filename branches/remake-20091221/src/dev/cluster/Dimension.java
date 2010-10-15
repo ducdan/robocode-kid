@@ -5,11 +5,11 @@ import java.util.ListIterator;
 
 import dev.utils.Utils;
 
-public class Dimension {
+public class Dimension<E> {
 
    public void print() {
       String str = this.scale.getClass().getName() + ": ";
-      for (Vector v : this.vectors) {
+      for (Vector<E> v : this.vectors) {
          str += v.getComponent(this.scale) + " ";
       }
       System.out.println(str);
@@ -17,34 +17,34 @@ public class Dimension {
 
 
 
-   private Scale              scale;
-   private LinkedList<Vector> vectors;
+   private Scale                 scale;
+   private LinkedList<Vector<E>> vectors;
 
    public Dimension(Scale s) {
       this.scale = s;
-      this.vectors = new LinkedList<Vector>();
+      this.vectors = new LinkedList<Vector<E>>();
    }
 
    public Scale getScale() {
       return this.scale;
    }
 
-   public void add(Vector v) {
+   public void add(Vector<E> v) {
       if (v != null)
          this.vectors.add(this.binarySearch(v), v);
    }
 
-   public LinkedList<Vector> getCluster(Vector center, int size) {
-      LinkedList<Vector> cluster = new LinkedList<Vector>();
+   public LinkedList<Vector<E>> getCluster(Vector<E> center, int size) {
+      LinkedList<Vector<E>> cluster = new LinkedList<Vector<E>>();
 
       int index = this.binarySearch(center);
-      ListIterator<Vector> iterN = this.vectors.listIterator(index);
-      ListIterator<Vector> iterP = this.vectors.listIterator(index);
+      ListIterator<Vector<E>> iterN = this.vectors.listIterator(index);
+      ListIterator<Vector<E>> iterP = this.vectors.listIterator(index);
 
       if (iterN.hasNext()) {
          if (iterP.hasPrevious()) {
-            Vector vN = iterN.next();
-            Vector vP = iterP.previous();
+            Vector<E> vN = iterN.next();
+            Vector<E> vP = iterP.previous();
             double cN = Utils.abs(this.scale.compare(center, vN));
             double cP = Utils.abs(this.scale.compare(center, vP));
 
@@ -127,13 +127,13 @@ public class Dimension {
     * @param vectors
     * @return
     */
-   private int binarySearch(Vector v) {
+   private int binarySearch(Vector<E> v) {
       int first = 0;
       int last = this.vectors.size();
       int mid = (last + first) / 2;
       while (first < last) {
          mid = (last + first) / 2;
-         Vector m = this.vectors.get(mid);
+         Vector<E> m = this.vectors.get(mid);
          int sign_m = Utils.signum(this.scale.compare(v, m));
          if (sign_m == 0) {
             first = last = mid;

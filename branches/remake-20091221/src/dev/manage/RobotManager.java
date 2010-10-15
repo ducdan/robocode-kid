@@ -121,6 +121,7 @@ public class RobotManager implements EventHandler, MessageHandler {
     * @param e
     *           the current {@link Event} being processed.
     */
+   @Override
    public void inEvent(Event e) {
       if (e instanceof ScannedRobotEvent) {
          ScannedRobotEvent sre = (ScannedRobotEvent) e;

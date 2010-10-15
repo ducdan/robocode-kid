@@ -16,11 +16,11 @@ public abstract class Scale {
     * @return a double representing the relationship between <code>v1</code> and <code>v2</code>: positive, negative, or
     *         zero.
     */
-   public double compare(Vector v1, Vector v2) {
+   public double compare(Vector<?> v1, Vector<?> v2) {
       return v1.getComponent(this) - v2.getComponent(this);
    }
 
-   public double compareNormalized(Vector v1, Vector v2) {
+   public double compareNormalized(Vector<?> v1, Vector<?> v2) {
       return compare(v1, v2) / max;
    }
 
