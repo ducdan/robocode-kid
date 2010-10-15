@@ -6,15 +6,13 @@ import java.util.Iterator;
 
 import dev.data.RobotData;
 
-public class Vector {
+public class Vector<E> {
 
-   // private RobotData view;
-   // private RobotData reference;
+   private E                      data;
    private HashMap<Scale, Double> components;
 
-   public Vector(Collection<Scale> scales, RobotData view, RobotData reference) {
-      // this.view = view;
-      // this.reference = reference;
+   public Vector(Collection<Scale> scales, RobotData view, RobotData reference, E data) {
+      this.data = data;
       components = new HashMap<Scale, Double>(scales.size());
       for (Scale s : scales)
          components.put(s, s.value(view, reference));
@@ -23,16 +21,12 @@ public class Vector {
    protected Vector() {
    }
 
-   // public RobotData getView() {
-   // return view;
-   // }
-   //
-   // public RobotData getReference() {
-   // return reference;
-   // }
-
-   protected Double getComponent(Scale s) {
+   protected double getComponent(Scale s) {
       return components.get(s);
+   }
+
+   public E getData() {
+      return data;
    }
 
    @Override

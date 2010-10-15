@@ -8,6 +8,6 @@ public interface EventHandler {
 
    public void inEvent(Event e);
 
-   public void inEvents(List<Event> e);
+   public void inEvents(List<Event> events);
 
 }

@@ -1,6 +1,13 @@
 package dev.utils;
 
 import java.awt.geom.Point2D;
+import java.util.Iterator;
+import java.util.List;
+
+import robocode.Bullet;
+import robocode.Rules;
+import dev.data.RobotData;
+import dev.virtual.VirtualWave;
 
 public final class Utils {
 
@@ -142,8 +149,8 @@ public final class Utils {
       return Trig.atan2(finish.getX() - start.getX(), finish.getY() - start.getY());
    }
 
-   public static final double angle(double startX, double startY, double finishX, double finishY) {
-      return Trig.atan2(finishX - startX, finishY - startY);
+   public static final double angle(double x1, double y1, double x2, double y2) {
+      return Trig.atan2(x2 - x1, y2 - y1);
    }
 
 
@@ -168,8 +175,87 @@ public final class Utils {
       return low <= n && n <= high;
    }
 
+   public static final boolean inRange(double low, double n, double high, double percent) {
+      return (low < n && n < high) || isNear(low, n, percent) || isNear(n, high, percent);
+   }
+
    public static final boolean isNear(double n1, double n2, double percent) {
       return abs(2.0 * (n1 - n2) / (n1 + n2)) < percent;
+   }
+
+
+
+   public static final double maxEscapeAngle(double bulletVelocity) {
+      return Trig.asin(Rules.MAX_VELOCITY / bulletVelocity);
+   }
+
+   public static final double firePower(double bulletDamage) {
+      if (bulletDamage < 4.0) {
+         return bulletDamage / 4.0;
+      } else {
+         return (bulletDamage + 2.0) / 6.0;
+      }
+   }
+
+   public static final double energyReturn(double firePower) {
+      return 3.0 * firePower;
+   }
+
+   public static final double energyReturn_BulletDamage(double bulletDamage) {
+      if (bulletDamage < 4.0) {
+         return 3.0 / 4.0 * bulletDamage;
+      } else {
+         return (bulletDamage + 2.0) / 2.0;
+      }
+   }
+
+   public static final <E extends VirtualWave> E findWaveMatch(List<E> waves, Bullet bullet, long time) {
+      E w, match = null;
+      Iterator<E> iter = waves.iterator();
+      while (match == null && iter.hasNext()) {
+         w = iter.next();
+         double bulletDist = Utils.dist(w.getStartX(), w.getStartY(), bullet.getX(), bullet.getY());
+         double waveDist = w.getDist(time) - (bullet.isActive() ? 0.0 : bullet.getVelocity());
+         // if ((Math.abs(bulletDist - waveDist) < 1.0 || Math.abs(bulletDist - waveDist - bullet.getVelocity()) < 1.0)
+         // && Math.abs(w.getFirePower() - bullet.getPower()) < 2.0D * Rules.MIN_BULLET_POWER) {
+         if (isNear(bulletDist, waveDist, .01) // || isNear(bulletDist, waveDist + bullet.getVelocity(), .01)
+               && isNear(w.getFirePower(), bullet.getPower(), .01)) {
+            match = w;
+         }
+      }
+      if (match == null) {
+         System.out.println("NO MATCH FOUND! - Utils.findWaveMatch(List<VirtualWave>, Bullet, long)");
+         System.out.println("Bullet: " + bullet.getVelocity() + " " + bullet.isActive());
+         for (E wave : waves) {
+            double bulletDist = Utils.dist(wave.getStartX(), wave.getStartY(), bullet.getX(), bullet.getY());
+            double waveDist = wave.getDist(time);
+            System.out.println("   Bullet Dist: " + bulletDist + " Wave Dist: " + waveDist + " Wave Velocity: "
+                  + wave.getVelocity());
+         }
+      }
+      return match;
+   }
+
+   public static final double getGuessFactor(VirtualWave wave, RobotData start, Bullet bullet) {
+      double direction = Utils.getDirection(start.getHeading(), start.getVelocity(), wave.getHeading());
+      double angleOffset = Utils.relative(bullet.getHeadingRadians() - wave.getHeading());
+      return limit(-1, angleOffset / wave.getMaxEscapeAngle(), 1) * direction;
+   }
+
+   /**
+    * Returns the rotation direction. That is, the direction a robot is traveling around a point with 1 being clockwise,
+    * and -1 being counter-clockwise.
+    * 
+    * @param robotHeading
+    *           the robot's heading
+    * @param robotVelocity
+    *           the robot's relative speed
+    * @param angleToRobot
+    *           the angle to the robot from the rotation point
+    * @return the rotation direction
+    */
+   public static final int getDirection(double robotHeading, double robotVelocity, double angleToRobot) {
+      return sign(Trig.sin(robotHeading - angleToRobot) * robotVelocity);
    }
 
 }
