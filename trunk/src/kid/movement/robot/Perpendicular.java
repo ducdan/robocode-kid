@@ -30,20 +30,20 @@ public class Perpendicular extends Movement {
    /**
     * Determines if a deserialized file is compatible with this class.<br>
     * <br>
-    * Maintainers must change this value if and only if the new version of this class is not
-    * compatible with old versions.
+    * Maintainers must change this value if and only if the new version of this class is not compatible with old
+    * versions.
     */
    private static final long serialVersionUID = 4332573743463836316L;
 
-   private double safeDistance;
+   private double            safeDistance;
 
-   private Point2D[] forwards = new Point2D[0];
-   private Point2D[] stop = new Point2D[0];
-   private Point2D[] backwards = new Point2D[0];
+   private Point2D[]         forwards         = new Point2D[0];
+   private Point2D[]         stop             = new Point2D[0];
+   private Point2D[]         backwards        = new Point2D[0];
 
-   private static final int NUM_BINS = 101;
+   private static final int  NUM_BINS         = 101;
 
-   private int points = 4;
+   private int               points           = 4;
 
    public Perpendicular(final Robot myRobot) {
       super(myRobot);
@@ -164,7 +164,7 @@ public class Perpendicular extends Movement {
                for (int j = 0; j < waves.length - i && !hit; j++) {
                   VirtualWave w = waves[j];
                   if (w.getDistSq(time) > Utils.distSq(w.getStartX(), w.getStartY(), x, y)) {
-                     points[j] = new Point2D.Double(x, y);
+                     points[i] = new Point2D.Double(x, y);
 
                      robot.getGraphics().fillOval((int) x - 1, (int) y - 1, 3, 3);
                      VirtualWave temp = waves[waves.length - (i + 1)];
@@ -189,7 +189,7 @@ public class Perpendicular extends Movement {
    }
 
    @Override
-   public void move(final RobotData[] robots, final VirtualBullet[] teammateBullets) {
+   public void move(RobotData[] robots, VirtualBullet[] teammateBullets) {
       long time = robot.getTime();
       double perpenAngle = 0;
       double totalWeight = 0;
@@ -219,7 +219,7 @@ public class Perpendicular extends Movement {
       }
    }
 
-   public RobotVector move(final RobotVector myRobot, final RobotData[] robots) {
+   public RobotVector move(RobotVector myRobot, RobotData[] robots) {
       double perpenAngle = 0;
       double totalWeight = 0;
       double minRobotDist = Double.POSITIVE_INFINITY;
@@ -239,12 +239,12 @@ public class Perpendicular extends Movement {
    }
 
    @Override
-   public Point2D[] getMove(final RobotData[] robots, final VirtualBullet[] teammateBullets, final long time) {
+   public Point2D[] getMove(RobotData[] robots, VirtualBullet[] teammateBullets, long time) {
       return null;
    }
 
    @Override
-   public void inEvent(final Event event) {
+   public void inEvent(Event event) {
       // TODO method stub
    }
 
@@ -258,11 +258,11 @@ public class Perpendicular extends Movement {
       return new String("One-On-One Movement");
    }
 
-   public void print(final PrintStream console) {
+   public void print(PrintStream console) {
       // TODO method stub
    }
 
-   public void print(final RobocodeFileOutputStream output) {
+   public void print(RobocodeFileOutputStream output) {
       // TODO method stub
    }
 
