@@ -1,106 +1,115 @@
 package dev;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.RoundRectangle2D;
+import java.awt.event.MouseEvent;
 
+import kid.movement.radar.RadarMovement;
 import robocode.AdvancedRobot;
-import robocode.HitRobotEvent;
-import robocode.HitWallEvent;
-import robocode.Rules;
+import robocode.BulletHitBulletEvent;
+import robocode.DeathEvent;
+import robocode.HitByBulletEvent;
+import robocode.RobotDeathEvent;
 import robocode.ScannedRobotEvent;
-import dev.move.PsudoRobot;
+import robocode.WinEvent;
+import dev.cluster.Scale;
+import dev.cluster.scales.Distance;
+import dev.cluster.scales.LateralVelocity;
+import dev.cluster.scales.Velocity;
+import dev.data.RobotData;
+import dev.draw.DrawMenu;
+import dev.draw.RobotGraphics;
+import dev.manage.RobotManager;
+import dev.move.MovementProfiler;
 
 public class Test extends AdvancedRobot {
-   private PsudoRobot psudo;
 
-   boolean movingForward;
+   private RadarMovement        radar;
+
+
+
+   private RobotManager         robots;
+   private static final Scale[] scales = { new Distance(), new Velocity(), new LateralVelocity() };
+
+   private MovementProfiler     profile;
 
    @Override
    public void run() {
-      rr2d = new RoundRectangle2D.Double(18.0, 18.0, getBattleFieldWidth() - 36.0, getBattleFieldHeight() - 36.0,
-            radius, radius);
+      radar = new RadarMovement(this);
 
-      psudo = new PsudoRobot(this);
+      this.robots = RobotManager.getInstance(this);
+      this.profile = new MovementProfiler(this, scales);
 
-      while (true) {
-         setAhead(40000);
-         psudo.setAhead(40000);
-         movingForward = true;
-         setTurnRight(90);
-         psudo.setTurnRight(Math.toRadians(90));
+      setTurnRadarRightRadians(Double.POSITIVE_INFINITY);
 
-         // psudo.compare(this);
+      do {
+         this.execute();
+      } while (true);
+   }
 
-         while (getTurnRemaining() != 0.0) {
-            psudo.tick();
-            execute();
-            // psudo.compare(this);
-         }
-
-         setTurnLeft(180);
-         psudo.setTurnRight(Math.toRadians(-180));
-         // ... and wait for the turn to finish ...
-         while (getTurnRemaining() != 0.0) {
-            psudo.tick();
-            execute();
-            // psudo.compare(this);
-         }
-
-         setTurnRight(180);
-         psudo.setTurnRight(Math.toRadians(180));
-         // .. and wait for that turn to finish.
-         while (getTurnRemaining() != 0.0) {
-            psudo.tick();
-            execute();
-            // psudo.compare(this);
-         }
+   @Override
+   public void onScannedRobot(ScannedRobotEvent event) {
+      this.robots.inEvent(event);
+      this.profile.inEvent(event);
+      // if (setFireBullet(2.0) != null) {
+      // // Vector center = new Vector(Test.scales, robots.getRobot(event.getName()), new RobotData(this));
+      // // System.out.println("CENTER: " + center);
+      //
+      // // LinkedList<Object> vectors = space.getClustor(robots.getRobot(event.getName()), new RobotData(this), 10);
+      // // String str = "CLUSTER:\n";
+      // // for (Vector<Object> v : vectors) {
+      // // str += v;
+      // // }
+      // // System.out.println(str);
+      //
+      // space.add(robots.getRobot(event.getName()), new RobotData(this), null);
+      // }
+      if (getOthers() == 1) {
+         RobotData enemy = robots.getRobot(event.getName());
+         radar.setSweep(enemy.getX(), enemy.getY(), 20);
       }
    }
 
-   public void reverseDirection() {
-      if (movingForward) {
-         setBack(40000);
-         psudo.setAhead(-40000);
-         movingForward = false;
-      } else {
-         setAhead(40000);
-         psudo.setAhead(40000);
-         movingForward = true;
-      }
+   @Override
+   public void onRobotDeath(RobotDeathEvent event) {
+      this.robots.inEvent(event);
+      this.profile.inEvent(event);
    }
 
-   double radius = Rules.MAX_VELOCITY / Math.sin(Rules.getTurnRateRadians(Rules.MAX_VELOCITY));
-   RoundRectangle2D rr2d;
+   @Override
+   public void onDeath(DeathEvent event) {
+      this.robots.inEvent(event);
+      this.profile.inEvent(event);
+   }
+
+   @Override
+   public void onWin(WinEvent event) {
+      this.robots.inEvent(event);
+      this.profile.inEvent(event);
+   }
+
+   @Override
+   public void onHitByBullet(HitByBulletEvent event) {
+      this.profile.inEvent(event);
+   }
+
+   @Override
+   public void onBulletHitBullet(BulletHitBulletEvent event) {
+      this.profile.inEvent(event);
+   }
 
    @Override
    public void onPaint(Graphics2D g) {
-      super.onPaint(g);
-      g.setColor(Color.BLUE);
+      DrawMenu.draw(g);
+      this.profile.draw(new RobotGraphics(g, this));
 
-      g.draw(rr2d);
-
-      PsudoRobot r = new PsudoRobot(this);
-      for (int i = 0; i < 20; i++) {
-         r.tick();
-         g.fillOval((int) r.getX(), (int) r.getY(), 2, 2);
-      }
+      DrawMenu.getValue("Hello", "Goodbye");
+      DrawMenu.getValue("Hey", "Bye");
+      DrawMenu.getValue("Sweet Dreams", "Night Time");
    }
 
    @Override
-   public void onHitWall(HitWallEvent e) {
-      reverseDirection();
+   public void onMouseClicked(MouseEvent e) {
+      DrawMenu.inMouseEvent(e);
    }
 
-   @Override
-   public void onScannedRobot(ScannedRobotEvent e) {
-      fire(1);
-   }
-
-   @Override
-   public void onHitRobot(HitRobotEvent e) {
-      if (e.isMyFault()) {
-         reverseDirection();
-      }
-   }
 }
