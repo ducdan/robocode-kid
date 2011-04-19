@@ -1,7 +1,9 @@
 package dev.cluster;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.TreeMap;
 
 import dev.utils.Utils;
 
@@ -9,7 +11,7 @@ public class Dimension<E> {
 
    public void print() {
       String str = this.scale.getClass().getName() + ": ";
-      for (Vector<E> v : this.vectors) {
+      for (Vector<E> v : tree_.values()) {
          str += v.getComponent(this.scale) + " ";
       }
       System.out.println(str);
@@ -17,12 +19,24 @@ public class Dimension<E> {
 
 
 
-   private Scale                 scale;
-   private LinkedList<Vector<E>> vectors;
+   private Scale                         scale;
+   private LinkedList<Vector<E>>         vectors;
+
+   private TreeMap<Vector<E>, Vector<E>> tree_;
+   private Comparator<Vector<E>>         treeCompare_;
 
    public Dimension(Scale s) {
       this.scale = s;
       this.vectors = new LinkedList<Vector<E>>();
+
+      treeCompare_ = new Comparator<Vector<E>>() {
+         @Override
+         public int compare(Vector<E> o1, Vector<E> o2) {
+            return (int) (o1.getComponent(scale) - o2.getComponent(scale));
+         }
+      };
+
+      tree_ = new TreeMap<Vector<E>, Vector<E>>(treeCompare_);
    }
 
    public Scale getScale() {
@@ -32,6 +46,9 @@ public class Dimension<E> {
    public void add(Vector<E> v) {
       if (v != null)
          this.vectors.add(this.binarySearch(v), v);
+      if (v != null) {
+         tree_.put(v, v);
+      }
    }
 
    public LinkedList<Vector<E>> getCluster(Vector<E> center, int size) {

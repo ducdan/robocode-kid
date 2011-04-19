@@ -1,4 +1,4 @@
-package dev.data;
+package dev.robots;
 
 import robocode.Robot;
 import robocode.ScannedRobotEvent;

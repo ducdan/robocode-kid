@@ -3,7 +3,7 @@ package dev.cluster.scales;
 import java.awt.geom.Rectangle2D;
 
 import dev.cluster.Scale;
-import dev.data.RobotData;
+import dev.robots.RobotData;
 import dev.utils.Utils;
 
 public class WallDistance extends Scale {

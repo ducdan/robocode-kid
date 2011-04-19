@@ -4,13 +4,14 @@ import java.awt.geom.Rectangle2D;
 
 import robocode.Robot;
 import robocode.Rules;
-import dev.data.RobotData;
 import dev.draw.RobotColor;
 import dev.draw.RobotGraphics;
+import dev.robots.RobotData;
 import dev.utils.Trig;
 import dev.utils.Utils;
 
 
+// TODO comment: class -> VirtualWave
 public class VirtualWave {
 
    /**
@@ -24,37 +25,37 @@ public class VirtualWave {
    /**
     * The x coordinate of the point from which this wave originated.
     */
-   protected double          startX;
+   protected double          originX_;
 
    /**
     * The y coordinate of the point from which this wave originated.
     */
-   protected double          startY;
+   protected double          originY_;
 
    /**
     * The supposed heading of this wave. I.e., a wave has no real heading, it is only used for a reference.
     */
-   protected double          heading;
+   protected double          heading_;
 
    /**
     * The fire power at which the wave was fired.
     */
-   protected double          firePower;
+   protected double          firePower_;
 
    /**
     * The speed at which the wave is traveling.
     */
-   protected double          velocity;
+   protected double          velocity_;
 
    /**
     * The maximum angle a robot could reach with reference to the supposed heading before the wave passes it.
     */
-   protected double          maxEscapeAngle;
+   protected double          maxEscapeAngle_;
 
    /**
     * The time at which the wave was fired or created.
     */
-   protected long            creationTime;
+   protected long            creationTime_;
 
    /**
     * Creates a blank {@code VirtualWave class}.
@@ -72,86 +73,86 @@ public class VirtualWave {
    }
 
    private void init(double startX, double startY, double heading, double firePower, final long creationTime) {
-      this.startX = startX;
-      this.startY = startY;
-      this.heading = heading;
-      this.firePower = firePower;
-      this.velocity = Rules.getBulletSpeed(this.firePower);
-      this.maxEscapeAngle = Utils.maxEscapeAngle(this.velocity);
-      this.creationTime = creationTime;
+      this.originX_ = startX;
+      this.originY_ = startY;
+      this.heading_ = heading;
+      this.firePower_ = firePower;
+      this.velocity_ = Rules.getBulletSpeed(this.firePower_);
+      this.maxEscapeAngle_ = Utils.maxEscapeAngle(this.velocity_);
+      this.creationTime_ = creationTime;
    }
 
    /**
     * @return the maximum escape angle
-    * @see #maxEscapeAngle
+    * @see #maxEscapeAngle_
     */
    public double getMaxEscapeAngle() {
-      return maxEscapeAngle;
+      return maxEscapeAngle_;
    }
 
    /**
     * Returns the X coordinate of the wave's origin to {@code double} precision.
     * 
     * @return the X coordinate of the wave's origin
-    * @see #startX
+    * @see #originX_
     */
    public double getStartX() {
-      return startX;
+      return originX_;
    }
 
    /**
     * Returns the Y coordinate of the wave's origin to {@code double} precision.
     * 
     * @return the Y coordinate of the wave's origin
-    * @see #startY
+    * @see #originY_
     */
    public double getStartY() {
-      return startY;
+      return originY_;
    }
 
    /**
     * Returns the supposed heading that this wave is traveling in to <code>double</code> precision.
     * 
     * @return the wave's supposed heading
-    * @see #heading
+    * @see #heading_
     */
    public double getHeading() {
-      return heading;
+      return heading_;
    }
 
    /**
     * Returns the fire power of the wave to <code>double</code> precision.
     * 
     * @return the wave's fire power
-    * @see #firePower
+    * @see #firePower_
     */
    public double getFirePower() {
-      return firePower;
+      return firePower_;
    }
 
    /**
     * Returns the speed at which the wave is traveling to <code>double</code> precision.
     * 
     * @return the wave's speed
-    * @see #velocity
+    * @see #velocity_
     */
    public double getVelocity() {
-      return velocity;
+      return velocity_;
    }
 
    /**
     * Returns the creation time of the wave to <code>long</code> precision.
     * 
     * @return the wave's creation time.
-    * @see #creationTime
+    * @see #creationTime_
     */
    public long getCreationTime() {
-      return creationTime;
+      return creationTime_;
    }
 
    // BORED documentation: VirtualWave - active(long)
    public boolean active(long time) {
-      return !(getStartX() < 0 || getStartY() < 0 || getDist(time) > 7500.0D);
+      return originX_ > 0 && originY_ > 0 && getDist(time) < 7500.0D;
    }
 
    /**
@@ -162,7 +163,7 @@ public class VirtualWave {
     * @return wave's travel distance.
     */
    public double getDist(long time) {
-      return getVelocity() * (time - getCreationTime());
+      return velocity_ * (time - creationTime_);
    }
 
    // BORED documentation: VirtualWave - getDistSq(long)
@@ -183,7 +184,7 @@ public class VirtualWave {
     * @return distance to wave's impact
     */
    public double getDistToImpact(double x, double y, long time) {
-      double dist = Utils.dist(getStartX(), getStartY(), x, y);
+      double dist = Utils.dist(originX_, originY_, x, y);
       dist -= getDist(time);
       return dist;
    }
@@ -202,7 +203,7 @@ public class VirtualWave {
     */
    public long getTimeToImpact(double x, double y, long time) {
       double dist = getDistToImpact(x, y, time);
-      return (long) (dist / getVelocity());
+      return (long) (dist / velocity_);
    }
 
    public boolean testHit(RobotData robot) {
@@ -218,7 +219,7 @@ public class VirtualWave {
    }
 
    public boolean testHit(double x, double y, long time) {
-      return Utils.distSq(getStartX(), getStartY(), x, y) <= Utils.sqr(getDist(time));
+      return Utils.distSq(originX_, originY_, x, y) <= getDistSq(time);
    }
 
    public void draw(RobotGraphics grid) {
@@ -228,10 +229,10 @@ public class VirtualWave {
          grid.drawArcCenter(getStartX(), getStartY(), 2.0D * dist, 2.0D * dist, getHeading() - getMaxEscapeAngle(),
                2.0D * getMaxEscapeAngle());
          grid.fillOvalCenter(getStartX(), getStartY(), 5.0D, 5.0D);
-         grid.drawLine(getStartX(), getStartY(), Utils.getX(getStartX(), dist, getHeading() - getMaxEscapeAngle()),
-               Utils.getY(getStartY(), dist, getHeading() - getMaxEscapeAngle()));
-         grid.drawLine(getStartX(), getStartY(), Utils.getX(getStartX(), dist, getHeading() + getMaxEscapeAngle()),
-               Utils.getY(getStartY(), dist, getHeading() + getMaxEscapeAngle()));
+         grid.drawLine(getStartX(), getStartY(), Utils.projectX(getStartX(), dist, getHeading() - getMaxEscapeAngle()),
+               Utils.projectY(getStartY(), dist, getHeading() - getMaxEscapeAngle()));
+         grid.drawLine(getStartX(), getStartY(), Utils.projectX(getStartX(), dist, getHeading() + getMaxEscapeAngle()),
+               Utils.projectY(getStartY(), dist, getHeading() + getMaxEscapeAngle()));
       }
    }
 
@@ -256,13 +257,13 @@ public class VirtualWave {
 
    @Override
    public void finalize() {
-      startX = 0.0D;
-      startY = 0.0D;
-      heading = 0.0D;
-      firePower = 0.0D;
-      velocity = 0.0D;
-      maxEscapeAngle = 0.0D;
-      creationTime = 0L;
+      originX_ = 0.0D;
+      originY_ = 0.0D;
+      heading_ = 0.0D;
+      firePower_ = 0.0D;
+      velocity_ = 0.0D;
+      maxEscapeAngle_ = 0.0D;
+      creationTime_ = 0L;
    }
 
 }

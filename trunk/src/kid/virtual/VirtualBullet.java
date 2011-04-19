@@ -17,21 +17,22 @@ public class VirtualBullet extends VirtualObject {
 
    private static final long serialVersionUID = 8647867336085921279L;
 
-   private static double MAX_X = 5000.0D;
-   private static double MAX_Y = 5000.0D;
+   private static double     MAX_X            = 5000.0D;
+   private static double     MAX_Y            = 5000.0D;
 
-   private double startX;
-   private double stratY;
+   private double            startX;
+   private double            stratY;
 
-   private double deltaX;
-   private double deltaY;
+   private double            deltaX;
+   private double            deltaY;
 
-   private double heading;
-   private double velocity;
-   private double firePower;
-   private long creationTime;
+   private double            heading;
+   private double            velocity;
+   private double            firePower;
+   private long              creationTime;
 
-   public VirtualBullet(final double startX, final double startY, final double heading, final double firePower, final long creationTime) {
+   public VirtualBullet(final double startX, final double startY, final double heading, final double firePower,
+         final long creationTime) {
       init(startX, startY, heading, firePower, creationTime);
    }
 
@@ -43,7 +44,8 @@ public class VirtualBullet extends VirtualObject {
       init(bullet.getStartX(), bullet.getStartY(), bullet.getHeading(), bullet.getFirePower(), bullet.getCreationTime());
    }
 
-   private void init(final double startX, final double startY, final double heading, final double firePower, final long creationTime) {
+   private void init(final double startX, final double startY, final double heading, final double firePower,
+         final long creationTime) {
       this.startX = startX;
       this.stratY = startY;
       this.deltaX = Utils.getDeltaX(Rules.getBulletSpeed(firePower), heading);
@@ -114,7 +116,7 @@ public class VirtualBullet extends VirtualObject {
    }
 
    public double getDist(final double x, final double y, final long time) {
-      return Utils.sqr(getDistSq(x, y, time));
+      return Utils.sqrt(getDistSq(x, y, time));
    }
 
    public double getDistSq(final double x, final double y, final long time) {
@@ -122,7 +124,7 @@ public class VirtualBullet extends VirtualObject {
    }
 
    public double getDist(final Point2D point, final long time) {
-      return Utils.sqr(getDistSq(point, time));
+      return Utils.sqrt(getDistSq(point, time));
    }
 
    public double getDistSq(final Point2D point, final long time) {

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import dev.data.RobotData;
+import dev.robots.RobotData;
 import dev.utils.Utils;
 
 public class Space<E> {
@@ -33,7 +33,8 @@ public class Space<E> {
 
 
    public void add(RobotData view, RobotData reference, E data) {
-      Vector<E> v = new Vector<E>(this.scales, view.copy(), reference.copy(), data);
+      Vector<E> v = new Vector<E>(this.scales, view.copy(), reference.copy(),
+            data);
       for (Dimension<E> d : this.dimensions) {
          d.add(v);
       }
@@ -46,7 +47,8 @@ public class Space<E> {
          for (Vector<E> v : d.getCluster(center, size)) {
             if (!sorted.contains(new SortVector<E>(v, 0.0))) {
 
-               // TODO code: make so that one scale does not have precedence over another
+               // TODO code: make so that one scale does not have precedence
+               // over another
                double sort = 0.0;
                for (Scale s : this.scales)
                   sort += Utils.sqr(s.compareNormalized(center, v));
@@ -88,8 +90,15 @@ public class Space<E> {
       }
 
       LinkedList<E> cluster = new LinkedList<E>();
-      for (SortVector<E> sv : sorted)
+      for (Vector<E> sv : sorted)
          cluster.add(sv.getData());
+      
+      String str = "CLUSTER:\n";
+      for (Vector<E> v : sorted) {
+         str += v;
+      }
+      System.out.println(str);
+      
       return cluster;
    }
 
@@ -112,6 +121,16 @@ public class Space<E> {
       @Override
       public E getData() {
          return this.vector.getData();
+      }
+
+      @Override
+      public RobotData getView() {
+         return this.vector.getView();
+      }
+
+      @Override
+      public RobotData getReference() {
+         return this.vector.getReference();
       }
 
       @Override

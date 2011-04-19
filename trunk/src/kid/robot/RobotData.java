@@ -163,9 +163,7 @@ public class RobotData implements Cloneable, Serializable, Segmentable, Printabl
    }
 
    public RobotData(final ScannedRobotMessage srm, final Robot myRobot) {
-      double curX = Utils.getX(myRobot.getX(), srm.getDistance(), srm.getAngle());
-      double curY = Utils.getY(myRobot.getY(), srm.getDistance(), srm.getAngle());
-      init(srm.getName(), curX, curY, srm.getEnergy(), srm.getHeading(), srm.getVelocity(), srm.getTime());
+      init(srm.getName(), srm.getX(), srm.getY(), srm.getEnergy(), srm.getHeading(), srm.getVelocity(), srm.getTime());
    }
 
    public RobotData(final ScannedRobotEvent sre, final RobotData myRobot) {
@@ -175,9 +173,7 @@ public class RobotData implements Cloneable, Serializable, Segmentable, Printabl
    }
 
    public RobotData(final ScannedRobotMessage srm, final RobotData myRobot) {
-      double curX = Utils.getX(myRobot.getX(), srm.getDistance(), srm.getAngle());
-      double curY = Utils.getY(myRobot.getY(), srm.getDistance(), srm.getAngle());
-      init(srm.getName(), curX, curY, srm.getEnergy(), srm.getHeading(), srm.getVelocity(), srm.getTime());
+      init(srm.getName(), srm.getX(), srm.getY(), srm.getEnergy(), srm.getHeading(), srm.getVelocity(), srm.getTime());
    }
 
    public RobotData(final Robot myRobot) {
@@ -313,13 +309,9 @@ public class RobotData implements Cloneable, Serializable, Segmentable, Printabl
 
    public void update(final ScannedRobotMessage srm, final Robot myRobot) {
       if ((myRobot.getTime() - time) < 0 && isDead()) {
-         double curX = Utils.getX(myRobot.getX(), srm.getDistance(), srm.getAngle());
-         double curY = Utils.getY(myRobot.getY(), srm.getDistance(), srm.getAngle());
-         updateFromDeath(curX, curY, srm.getEnergy(), srm.getHeading(), srm.getVelocity(), srm.getTime());
+         updateFromDeath(srm.getX(), srm.getY(), srm.getEnergy(), srm.getHeading(), srm.getVelocity(), srm.getTime());
       } else if ((myRobot.getTime() - time) > 0 && !isDead()) {
-         double curX = Utils.getX(myRobot.getX(), srm.getDistance(), srm.getAngle());
-         double curY = Utils.getY(myRobot.getY(), srm.getDistance(), srm.getAngle());
-         update(curX, curY, srm.getEnergy(), srm.getHeading(), srm.getVelocity(), srm.getTime());
+         update(srm.getX(), srm.getY(), srm.getEnergy(), srm.getHeading(), srm.getVelocity(), srm.getTime());
       }
    }
 

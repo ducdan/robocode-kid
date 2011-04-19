@@ -6,10 +6,12 @@ import java.util.List;
 
 import robocode.Bullet;
 import robocode.Rules;
-import dev.data.RobotData;
+import dev.robots.RobotData;
 import dev.virtual.VirtualWave;
 
 public final class Utils {
+
+   // private final static Logger logger_ = Logger.getLogger(Utils.class.getName());
 
    private Utils() {
    }
@@ -36,16 +38,36 @@ public final class Utils {
       return n;
    }
 
-   public static final double getX(double x, double d, double a) {
-      return x + d * Trig.sin(a);
+   public static final double normal(double n, double min, double max) {
+      if (!Double.isInfinite(n) && !Double.isNaN(n) && min < max) {
+         n %= (max - min);
+         if (n <= min)
+            n += (max - min);
+         else if (n > max)
+            n -= (max - min);
+      }
+      return n;
    }
 
-   public static final double getY(double y, double d, double a) {
-      return y + d * Trig.cos(a);
+
+   public static final double projectX(double x, double d, double a) {
+      return x + deltaX(d, a);
+   }
+
+   public static final double deltaX(double d, double a) {
+      return d * Trig.sin(a);
+   }
+
+   public static final double projectY(double y, double d, double a) {
+      return y + deltaY(d, a);
+   }
+
+   public static final double deltaY(double d, double a) {
+      return d * Trig.cos(a);
    }
 
    public static final Point2D project(Point2D p, double d, double a) {
-      return new Point2D.Double(getX(p.getX(), d, a), getY(p.getY(), d, a));
+      return new Point2D.Double(projectX(p.getX(), d, a), projectY(p.getY(), d, a));
    }
 
    public static final double avg(double n1, double w1, double n2, double w2) {
@@ -87,6 +109,18 @@ public final class Utils {
 
    public static final double qur(double n) {
       return n * n * n * n;
+   }
+
+   public static final double sqrt(double n) {
+      return StrictMath.sqrt(n);
+   }
+
+   public static final double cbrt(double n) {
+      return StrictMath.cbrt(n);
+   }
+
+   public static final double qurt(double n) {
+      return StrictMath.sqrt(StrictMath.sqrt(n));
    }
 
    public static final double max(double a, double b) {
@@ -210,16 +244,16 @@ public final class Utils {
    }
 
    public static final <E extends VirtualWave> E findWaveMatch(List<E> waves, Bullet bullet, long time) {
-      E w, match = null;
+      E w;
+      E match = null;
       Iterator<E> iter = waves.iterator();
       while (match == null && iter.hasNext()) {
          w = iter.next();
-         double bulletDist = Utils.dist(w.getStartX(), w.getStartY(), bullet.getX(), bullet.getY());
-         double waveDist = w.getDist(time) - (bullet.isActive() ? 0.0 : bullet.getVelocity());
-         // if ((Math.abs(bulletDist - waveDist) < 1.0 || Math.abs(bulletDist - waveDist - bullet.getVelocity()) < 1.0)
-         // && Math.abs(w.getFirePower() - bullet.getPower()) < 2.0D * Rules.MIN_BULLET_POWER) {
-         if (isNear(bulletDist, waveDist, .01) // || isNear(bulletDist, waveDist + bullet.getVelocity(), .01)
-               && isNear(w.getFirePower(), bullet.getPower(), .01)) {
+         double bulletDist = Utils.distSq(w.getStartX(), w.getStartY(), bullet.getX(), bullet.getY());
+         double waveDist = Utils.sqr(w.getDist(time) - (bullet.isActive() ? 0.0 : bullet.getVelocity()));
+         if (isNear(bulletDist, waveDist, .1) // compare travel dist
+               // || isNear(bulletDist, waveDist + bullet.getVelocity(), .01)
+               && isNear(w.getFirePower(), bullet.getPower(), .01)) { // compare bullet power
             match = w;
          }
       }

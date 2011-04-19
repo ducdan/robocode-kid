@@ -26,7 +26,7 @@ import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
 import robocode.Robot;
-import dev.data.RobotData;
+import dev.robots.RobotData;
 
 
 public class RobotGraphics {
