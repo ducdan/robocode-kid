@@ -4,35 +4,47 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import dev.data.RobotData;
+import dev.robots.RobotData;
 
 public class Vector<E> {
 
-   private E                      data;
-   private HashMap<Scale, Double> components;
+   private E                      data_;
+   private RobotData              view_;
+   private RobotData              reference_;
+   private HashMap<Scale, Double> components_;
 
    public Vector(Collection<Scale> scales, RobotData view, RobotData reference, E data) {
-      this.data = data;
-      components = new HashMap<Scale, Double>(scales.size());
+      data_ = data;
+      view_ = view;
+      reference_ = reference;
+      components_ = new HashMap<Scale, Double>(scales.size());
       for (Scale s : scales)
-         components.put(s, s.value(view, reference));
+         components_.put(s, s.value(view, reference));
    }
 
    protected Vector() {
    }
 
-   protected double getComponent(Scale s) {
-      return components.get(s);
+   public E getData() {
+      return data_;
    }
 
-   public E getData() {
-      return data;
+   public RobotData getView() {
+      return view_;
+   }
+
+   public RobotData getReference() {
+      return reference_;
+   }
+
+   protected double getComponent(Scale s) {
+      return components_.get(s);
    }
 
    @Override
    public String toString() {
       String str = "(";
-      Iterator<Double> iter = components.values().iterator();
+      Iterator<Double> iter = components_.values().iterator();
       while (iter.hasNext()) {
          str += iter.next();
          if (iter.hasNext())

@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import robocode.Bullet;
 import robocode.Robot;
-import dev.data.RobotData;
 import dev.draw.RobotGraphics;
+import dev.robots.RobotData;
 import dev.utils.Utils;
 
 public class DataWave<E> extends VirtualWave {

@@ -1,6 +1,5 @@
-package dev.manage;
+package dev.data;
 
-import java.util.List;
 
 import robocode.Event;
 
@@ -8,6 +7,6 @@ public interface EventHandler {
 
    public void inEvent(Event e);
 
-   public void inEvents(List<Event> events);
+   public void inEvents(Iterable<Event> events);
 
 }

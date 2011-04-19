@@ -1,5 +1,6 @@
 package kid.communication;
 
+import kid.utils.Utils;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
 
@@ -21,48 +22,40 @@ public class ScannedRobotMessage extends Message {
    /**
     * The name of the scanned robot.
     */
-   private String name;
+   private String            name;
 
-   // private double x;
-   // private double y;
-
-   /**
-    * The distance to the scanned robot.
-    */
-   private double distance;
-
-   /**
-    * The absolute angle to the scanned robot.
-    */
-   private double angle;
+   private double            x;
+   private double            y;
 
    /**
     * The current energy level of the scanned robot.
     */
-   private double energy;
+   private double            energy;
 
    /**
     * The current heading of the scanned robot.
     */
-   private double heading;
+   private double            heading;
 
    /**
     * The current heading of the scanned robot in radians.
     */
-   private double headingRadians;
+   private double            headingRadians;
 
    /**
     * The velocity of the scanned robot.
     */
-   private double velocity;
+   private double            velocity;
 
    /**
     * Converts a <code>{@link robocode.ScannedRobotEvent ScannedRobotEvent}</code> in to a
     * <code>ScannedRobotMessage</code> so that it may be sent to teammates or used for a reference when updating
     * information on a robot.
     * 
-    * @param sre - the <code>{@link robocode.ScannedRobotEvent ScannedRobotEvent}</code> to convert
-    * @param reference - the <code>{@link robocode.Robot Robot}</code> that this event was passed to
+    * @param sre
+    *           - the <code>{@link robocode.ScannedRobotEvent ScannedRobotEvent}</code> to convert
+    * @param reference
+    *           - the <code>{@link robocode.Robot Robot}</code> that this event was passed to
     */
    public ScannedRobotMessage(final ScannedRobotEvent sre, final Robot reference) {
       super(sre.getTime());
@@ -72,45 +65,27 @@ public class ScannedRobotMessage extends Message {
    /**
     * Initializes all the fields. Used for congruence between all the constructors.
     * 
-    * @param sre - the <code>{@link robocode.ScannedRobotEvent ScannedRobotEvent}</code> to convert
-    * @param reference - the <code>{@link robocode.Robot Robot}</code> that this event was passed to
+    * @param sre
+    *           - the <code>{@link robocode.ScannedRobotEvent ScannedRobotEvent}</code> to convert
+    * @param reference
+    *           - the <code>{@link robocode.Robot Robot}</code> that this event was passed to
     */
    private void init(final ScannedRobotEvent sre, final Robot reference) {
       this.name = sre.getName();
-      // this.x = Utils.getX(reference.getX(), sre.getDistance(), reference.getHeading() + sre.getBearing());
-      // this.y = Utils.getY(reference.getY(), sre.getDistance(), reference.getHeading() + sre.getBearing());
-      this.distance = sre.getDistance();
-      this.angle = reference.getHeading() + sre.getBearing();
+      this.x = Utils.getX(reference.getX(), sre.getDistance(), reference.getHeading() + sre.getBearing());
+      this.y = Utils.getY(reference.getY(), sre.getDistance(), reference.getHeading() + sre.getBearing());
       this.energy = sre.getEnergy();
       this.heading = sre.getHeading();
       this.headingRadians = sre.getHeadingRadians();
       this.velocity = sre.getVelocity();
    }
 
-   // public double getX() {
-   // return x;
-   // }
-   //
-   // public double getY() {
-   // return y;
-   // }
-
-   /**
-    * Returns the distance the robot is from the robot that scanned it.
-    * 
-    * @return the distance to the robot
-    */
-   public double getDistance() {
-      return distance;
+   public double getX() {
+      return x;
    }
 
-   /**
-    * Returns the angle to the robot with origin at the viewing robot.
-    * 
-    * @return the angle to the robot
-    */
-   public double getAngle() {
-      return angle;
+   public double getY() {
+      return y;
    }
 
    /**

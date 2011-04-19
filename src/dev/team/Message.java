@@ -1,6 +1,6 @@
 package dev.team;
 
-import dev.data.RobotData;
+import dev.robots.RobotData;
 
 public abstract class Message {
 

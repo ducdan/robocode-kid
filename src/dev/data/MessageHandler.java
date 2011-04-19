@@ -1,4 +1,4 @@
-package dev.manage;
+package dev.data;
 
 import dev.team.Message;
 

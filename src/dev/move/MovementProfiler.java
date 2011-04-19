@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 import robocode.AdvancedRobot;
 import robocode.Bullet;
@@ -20,10 +19,10 @@ import robocode.ScannedRobotEvent;
 import robocode.WinEvent;
 import dev.cluster.Scale;
 import dev.cluster.Space;
-import dev.data.EnemyData;
-import dev.data.RobotData;
+import dev.data.EventHandler;
 import dev.draw.RobotGraphics;
-import dev.manage.EventHandler;
+import dev.robots.EnemyData;
+import dev.robots.RobotData;
 import dev.utils.Utils;
 import dev.virtual.DataWave;
 
@@ -116,7 +115,7 @@ public class MovementProfiler implements EventHandler {
    }
 
    @Override
-   public void inEvents(List<Event> events) {
+   public void inEvents(Iterable<Event> events) {
       for (Event e : events)
          inEvent(e);
    }
@@ -174,10 +173,12 @@ public class MovementProfiler implements EventHandler {
    }
 
    private boolean firedBullet(RobotData enemy, double deltaEnergy, double deltaVelocity) {
-      // Determines whether the delta energy of the enemy robot is a possible fire energy drop
+      // Determines whether the delta energy of the enemy robot is a possible
+      // fire energy drop
       boolean fired = Utils.inRange(-Rules.MAX_BULLET_POWER, deltaEnergy, -Rules.MIN_BULLET_POWER, 0.01);
 
-      // A check to see if one of the enemy's bullets hit us at the same time they fired.
+      // A check to see if one of the enemy's bullets hit us at the same time
+      // they fired.
       deltaEnergy -= Utils.energyReturn_BulletDamage(Math.abs(getProfile(-1).getDeltaEnergy()));
       fired = fired || Utils.inRange(-Rules.MAX_BULLET_POWER, deltaEnergy, -Rules.MIN_BULLET_POWER, 0.01);
 
@@ -185,22 +186,25 @@ public class MovementProfiler implements EventHandler {
       fired = fired && Math.abs(deltaVelocity) <= Rules.DECELERATION;
 
       // Makes sure of ?
-      // fired = fired && Math.abs(enemy.getDeltaVelocity()) <= Rules.DECELERATION;
+      // fired = fired && Math.abs(enemy.getDeltaVelocity()) <=
+      // Rules.DECELERATION;
 
-      // Makes sure the inactivity time hasn't been reached and the robot is just losing energy from that
+      // Makes sure the inactivity time hasn't been reached and the robot is
+      // just losing energy from that
       fired = fired && !Utils.isNear(deltaEnergy, enemy.getDeltaEnergy(), 0.01);
 
       return fired;
    }
 
    private void handleBulletEvent(Bullet b, long eventTime) {
-      if (enemy != null && !enemy.isDead()) {
-         DataWave<Double> wave = Utils.findWaveMatch(enemyWaves, b, eventTime);
-         if (wave != null) {
-            enemyWaves.remove(wave);
-            Double gf = Utils.getGuessFactor(wave, wave.getView(), b);
-            spaces.get(enemy.getName()).add(wave.getView(), wave.getReference(), gf);
-         }
+      if (enemy == null || enemy.isDead()) {
+         return;
+      }
+      DataWave<Double> wave = Utils.findWaveMatch(enemyWaves, b, eventTime);
+      if (wave != null) {
+         enemyWaves.remove(wave);
+         Double gf = Utils.getGuessFactor(wave, wave.getView(), b);
+         spaces.get(enemy.getName()).add(wave.getView(), wave.getReference(), gf);
       }
    }
 

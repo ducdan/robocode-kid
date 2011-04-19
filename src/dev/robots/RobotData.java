@@ -1,4 +1,4 @@
-package dev.data;
+package dev.robots;
 
 import java.awt.geom.Rectangle2D;
 import java.io.PrintStream;
@@ -117,14 +117,14 @@ public class RobotData implements Cloneable, Serializable {
    }
 
    public RobotData(ScannedRobotEvent e, Robot r) {
-      double x = Utils.getX(r.getX(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
-      double y = Utils.getY(r.getY(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
+      double x = Utils.projectX(r.getX(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
+      double y = Utils.projectY(r.getY(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
       this.init(e.getName(), x, y, e.getEnergy(), e.getHeadingRadians(), e.getVelocity(), e.getTime());
    }
 
    public RobotData(Robot r) {
-      this.init(r.getName(), r.getX(), r.getY(), r.getEnergy(), Math.toRadians(r.getHeading()), r.getVelocity(), r
-            .getTime());
+      this.init(r.getName(), r.getX(), r.getY(), r.getEnergy(), Math.toRadians(r.getHeading()), r.getVelocity(),
+            r.getTime());
    }
 
    protected RobotData(RobotData r) {
@@ -207,8 +207,8 @@ public class RobotData implements Cloneable, Serializable {
    }
 
    public void update(ScannedRobotEvent e, Robot r) {
-      double curX = Utils.getX(r.getX(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
-      double curY = Utils.getY(r.getY(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
+      double curX = Utils.projectX(r.getX(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
+      double curY = Utils.projectY(r.getY(), e.getDistance(), Math.toRadians(r.getHeading() + e.getBearing()));
       this.update(curX, curY, e.getEnergy(), e.getHeadingRadians(), e.getVelocity(), e.getTime());
    }
 

@@ -1,7 +1,6 @@
-package dev.manage;
+package dev.robots;
 
 import java.util.HashMap;
-import java.util.List;
 
 import robocode.DeathEvent;
 import robocode.Event;
@@ -10,9 +9,8 @@ import robocode.RobotDeathEvent;
 import robocode.ScannedRobotEvent;
 import robocode.TeamRobot;
 import robocode.WinEvent;
-import dev.data.EnemyData;
-import dev.data.RobotData;
-import dev.data.TeammateData;
+import dev.data.EventHandler;
+import dev.data.MessageHandler;
 import dev.team.Message;
 
 /**
@@ -30,7 +28,7 @@ public class RobotManager implements EventHandler, MessageHandler {
     * Singleton instance. Only want one {@link RobotManager} floating around so we used the singleton pattern to achieve
     * this.
     */
-   private static RobotManager instance;
+   private static RobotManager instance_;
 
    /**
     * Creates and/or returns the singleton instance. If a {@link RobotManager} was created for another {@link Robot}
@@ -41,9 +39,9 @@ public class RobotManager implements EventHandler, MessageHandler {
     * @return the singleton instance of this {@link RobotManager}
     */
    public static RobotManager getInstance(Robot robot) {
-      if (instance == null)
-         instance = new RobotManager(robot);
-      return instance;
+      if (instance_ == null)
+         instance_ = new RobotManager(robot);
+      return instance_;
    }
 
    /**
@@ -53,7 +51,7 @@ public class RobotManager implements EventHandler, MessageHandler {
     * @return the singleton instance of this {@link RobotManager}
     */
    public static RobotManager getInstance() {
-      return instance;
+      return instance_;
    }
 
 
@@ -62,23 +60,23 @@ public class RobotManager implements EventHandler, MessageHandler {
     * The {@link Robot} this {@link RobotManager} is for. Provides information on number of enemies, size of
     * battlefield, etc.
     */
-   protected Robot                         robot;
+   protected Robot                         robot_;
 
    /**
     * A {@link HashMap} containing {@link RobotData} entries representing all the robots that are on the battlefield.
     */
-   protected HashMap<String, RobotData>    robots;
+   protected HashMap<String, RobotData>    robots_;
 
    /**
     * A {@link HashMap} containing {@link EnemyData} entries representing all the enemies that are on the battlefield.
     */
-   protected HashMap<String, EnemyData>    enemies;
+   protected HashMap<String, EnemyData>    enemies_;
 
    /**
     * A {@link HashMap} containing {@link TeammateData} entries representing all the teammates that are on the
     * battlefield.
     */
-   protected HashMap<String, TeammateData> teammates;
+   protected HashMap<String, TeammateData> teammates_;
 
 
    /**
@@ -88,20 +86,20 @@ public class RobotManager implements EventHandler, MessageHandler {
     * @param robot
     */
    private RobotManager(Robot robot) {
-      if (instance != null)
+      if (instance_ != null)
          throw new RuntimeException("Singleton class, connot create more than one instance.");
 
-      this.robot = robot;
-      this.robots = new HashMap<String, RobotData>(robot.getOthers());
-      this.enemies = new HashMap<String, EnemyData>(robot.getOthers());
-      this.teammates = new HashMap<String, TeammateData>(0);
+      this.robot_ = robot;
+      this.robots_ = new HashMap<String, RobotData>(2 * robot_.getOthers());
+      this.enemies_ = new HashMap<String, EnemyData>(2 * robot_.getOthers());
+      this.teammates_ = new HashMap<String, TeammateData>(0);
 
-      if (robot instanceof TeamRobot) {
-         TeamRobot tRobot = (TeamRobot) robot;
+      if (robot_ instanceof TeamRobot) {
+         TeamRobot tRobot = (TeamRobot) robot_;
          if (tRobot.getTeammates() != null) {
             int teammates = tRobot.getTeammates().length;
-            this.teammates = new HashMap<String, TeammateData>(teammates);
-            this.enemies = new HashMap<String, EnemyData>(robot.getOthers() - teammates);
+            this.teammates_ = new HashMap<String, TeammateData>(2 * teammates);
+            this.enemies_ = new HashMap<String, EnemyData>(2 * (robot_.getOthers() - teammates));
          }
       }
    }
@@ -145,7 +143,7 @@ public class RobotManager implements EventHandler, MessageHandler {
     *           the current {@link Event}s being processed.
     * @see #inEvent(Event)
     */
-   public void inEvents(List<Event> events) {
+   public void inEvents(Iterable<Event> events) {
       for (Event e : events)
          inEvent(e);
    }
@@ -170,16 +168,16 @@ public class RobotManager implements EventHandler, MessageHandler {
     */
    private void handleScannedRobotEvent(ScannedRobotEvent sre) {
       String name = sre.getName();
-      if (robots.containsKey(name)) {
-         robots.get(name).update(sre, robot);
-      } else if (robot instanceof TeamRobot && ((TeamRobot) robot).isTeammate(name)) {
-         TeammateData t = new TeammateData(sre, robot);
-         teammates.put(name, t);
-         robots.put(name, t);
+      if (robots_.containsKey(name)) {
+         robots_.get(name).update(sre, robot_);
+      } else if (robot_ instanceof TeamRobot && ((TeamRobot) robot_).isTeammate(name)) {
+         TeammateData t = new TeammateData(sre, robot_);
+         teammates_.put(name, t);
+         robots_.put(name, t);
       } else {
-         EnemyData e = new EnemyData(sre, robot);
-         enemies.put(name, e);
-         robots.put(name, e);
+         EnemyData e = new EnemyData(sre, robot_);
+         enemies_.put(name, e);
+         robots_.put(name, e);
       }
    }
 
@@ -191,8 +189,8 @@ public class RobotManager implements EventHandler, MessageHandler {
     */
    private void handleRobotDeathEvent(RobotDeathEvent rde) {
       String name = rde.getName();
-      if (robots.containsKey(name)) {
-         RobotData r = robots.get(name);
+      if (robots_.containsKey(name)) {
+         RobotData r = robots_.get(name);
          r.setDeath();
       }
    }
@@ -205,7 +203,7 @@ public class RobotManager implements EventHandler, MessageHandler {
     *           {@link DeathEvent} to process
     */
    private void handleDeathEvent(DeathEvent de) {
-      for (RobotData r : robots.values()) {
+      for (RobotData r : robots_.values()) {
          r.setDeath();
       }
    }
@@ -218,7 +216,7 @@ public class RobotManager implements EventHandler, MessageHandler {
     *           {@link WinEvent} to process
     */
    private void handleWinEvent(WinEvent de) {
-      for (RobotData r : robots.values()) {
+      for (RobotData r : robots_.values()) {
          r.setDeath();
       }
    }
@@ -232,7 +230,7 @@ public class RobotManager implements EventHandler, MessageHandler {
     * @return the corresponding {@link RobotData}
     */
    public RobotData getRobot(String name) {
-      RobotData r = robots.get(name);
+      RobotData r = robots_.get(name);
       return (r == null ? new RobotData() : r);
    }
 
@@ -245,7 +243,7 @@ public class RobotManager implements EventHandler, MessageHandler {
     * @return the corresponding {@link EnemyData}
     */
    public EnemyData getEnemy(String name) {
-      EnemyData e = enemies.get(name);
+      EnemyData e = enemies_.get(name);
       return (e == null ? new EnemyData() : e);
    }
 
@@ -258,7 +256,7 @@ public class RobotManager implements EventHandler, MessageHandler {
     * @return the corresponding {@link TeammateData}
     */
    public TeammateData getTeammate(String name) {
-      TeammateData t = teammates.get(name);
+      TeammateData t = teammates_.get(name);
       return (t == null ? new TeammateData() : t);
    }
 

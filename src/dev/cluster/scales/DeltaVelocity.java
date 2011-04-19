@@ -1,7 +1,7 @@
 package dev.cluster.scales;
 
 import dev.cluster.Scale;
-import dev.data.RobotData;
+import dev.robots.RobotData;
 
 public class DeltaVelocity extends Scale {
 
