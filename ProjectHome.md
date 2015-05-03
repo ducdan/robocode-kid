@@ -1,0 +1,1 @@
+This project contains all the source code that Brian Norman (a.k.a. KID on robowiki.net) is currently working on. It also contains all of his previous work.
